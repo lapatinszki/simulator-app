@@ -3,7 +3,7 @@ import pandas as pd
 
 st.title("Excel sor megjelenítő")
 
-# Excel betöltése
+# Excel betöltése (repo-ból)
 df = pd.read_excel("data.xlsx")
 
 # Session state a gombok kezeléséhez
@@ -14,7 +14,6 @@ if "row_number" not in st.session_state:
 
 # Ha még nem nyomták meg a "Mutasd" gombot
 if not st.session_state.show_row:
-    # Sor kiválasztása felhasználótól
     row_number = st.number_input(
         "Add meg a sor számát (1-től {}-ig)".format(len(df)),
         min_value=1,
