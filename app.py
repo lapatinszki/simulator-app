@@ -52,7 +52,7 @@ if not st.session_state.show_row:
 if st.session_state.show_row:
     selected_row = df.iloc[st.session_state.row_number - 1]
     st.write(f"Data of row {st.session_state.row_number} (first 30 columns):")
-    st.dataframe(selected_row.iloc[:30])  # csak az első 30 oszlop
+    st.table(selected_row.iloc[:30])  # csak az első 30 oszlop
 
 
     with st.spinner("Please wait..."):
@@ -158,4 +158,5 @@ if st.session_state.show_row:
 
 
 #py -m streamlit run app.py
+
 #py -m streamlit run app.py --server.port 8501 --server.address 172.31.218.134
