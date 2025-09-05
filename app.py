@@ -127,6 +127,8 @@ else:
         for idx, col_name in enumerate(param_cols):
             col = cols[idx % 3]
             with col:
+                label = f"{col_name}:"
+                
                 if col_name in ["Cycle time factor", "Percentage of the quality check", "Overshooting"]:
                     # Slider float típusú
                     keys = sorted(param_options[col_name].keys())
@@ -138,7 +140,7 @@ else:
                         step_val = 1.0
                     default_val = float(keys[len(keys)//2])
                     selections[col_name] = st.slider(
-                        col_name,
+                        label,
                         min_value=min_val,
                         max_value=max_val,
                         step=step_val,
@@ -149,8 +151,12 @@ else:
                     selections[col_name] = param_options[col_name][int(selections[col_name])]
                 else:
                     options = list(param_options[col_name].keys())
-                    selected_label = st.radio(col_name, options, index=0)
+                    selected_label = st.radio(label, options, index=0)
                     selections[col_name] = param_options[col_name][selected_label]
+                
+                # Elválasztó a widget alatt
+                st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True)
+
 
 
         if st.button("Run the simulation!"):
