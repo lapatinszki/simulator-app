@@ -3,20 +3,6 @@ import pandas as pd
 import plotly.express as px
 import streamlit.components.v1 as components
 
-# --- Force light mode ---
-st.markdown(
-    """
-    <style>
-    :root {
-        --background-color: #ffffff;
-        --secondary-background-color: #ffffff;
-        --primary-color: #0B142A;
-        --text-color: #0B142A;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 # --- SESSION STATE INIT ---
 if "logged_in" not in st.session_state:
@@ -47,7 +33,7 @@ if not st.session_state.logged_in:
 # --- JÁTÉK LEÍRÁS OLDAL ---
 elif st.session_state.show_game_intro:
     st.image("header.png", use_container_width=True)
-    st.title("Let's play a game! ℹ️")
+    st.title("Game description 📋")
     st.markdown("""
     Welcome to the ultimate game simulation!  
     In this game, you will select parameters for your manufacturing setup,  
@@ -61,7 +47,7 @@ elif st.session_state.show_game_intro:
 # --- JÁTÉK FELÜLET ---
 else:
     st.image("header.png", use_container_width=True)
-    st.title(f"Let's play a game, {st.session_state.nickname}! 👋")
+    st.title(f"Let's play the game, {st.session_state.nickname}! 👋")
 
     @st.cache_data
     def load_data():
@@ -167,7 +153,7 @@ else:
                     selections[col_name] = param_options[col_name][selected_label]
 
 
-        if st.button("Search result"):
+        if st.button("Run the simulation!"):
             st.session_state.attempts[i] = selections
             st.rerun()
 
@@ -258,60 +244,137 @@ else:
                 "Value": values_with_units
             })
 
-            st.subheader("Selected parameters and their values (with units)")
-            st.table(result_df)
+            # ---------------- Csoportosított megjelenítés ----------------
+            groups = {
+                "Finances 💸": [
+                    "Income", "Outgo", "Profit"
+                ],
+                "Input parameters ➡️": [
+                    "Size of the batches", "Type of the shipping box", "Cycle time factor",
+                    "Number of the operators", "Type of the quality check",
+                    "Percentage of the quality check", "Overshooting"
+                ],
+                "Shipping details 🚚": [
+                    "Elapsed time", "Outcome - All", "Outcome - OK", "Outcome - NOK",
+                    "Reached the required amount", "Difference from the required - OK",
+                    "Difference from the required - All"
+                ],
+                "Used raw and packing materials 📦": [
+                    "Used rods", "Used raw bases", "Used pins", "Used retail boxes",
+                    "Used shipper boxes", "Used pallets"
+                ],
+                "Energy consumption ⚡": [
+                    "Used electricity - T100", "Used electricity - T200", "Used electricity - T800"
+                ]
+            }
+
+            st.subheader("Results by groups")
+
+            for group_name, cols in groups.items():
+                expanded_state = True if group_name == "Finances 💸" else False
+
+                with st.expander(group_name, expanded=expanded_state):
+                    display_data = []
+                    for col in cols:
+                        if col not in df.columns:
+                            continue
+
+                        # Az érték mértékegységgel, Profit 2 tizedesjeggyel
+                        if col == "Profit":
+                            profit_float = float(profit_str)
+                            value = f"{profit_float:.2f} {units.get(col,'')}"
+                        else:
+                            if col in code_meanings:
+                                val = code_meanings[col].get(selected_row[col], selected_row[col])
+                            else:
+                                val = selected_row[col]
+                            value = f"{val} {units.get(col,'')}"
+
+                        display_data.append({
+                            "Parameter": col,
+                            "Value": value
+                        })
+
+                    if display_data:
+                        group_df = pd.DataFrame(display_data)
+
+                        def highlight_profit(row):
+                            styles = [''] * len(row)
+                            for i, param in enumerate(group_df['Parameter']):
+                                if param == 'Profit':
+                                    try:
+                                        val = float(profit_str)
+                                        color = 'green' if val > 0 else 'red'
+                                    except:
+                                        color = 'black'
+                                    styles[i] = f'color: {color}; font-weight: bold'
+                            return styles
+
+                        styled_df = group_df.style.apply(highlight_profit, axis=0)
+                        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+
+
+
+                    else:
+                        st.info("Nincs adat ebben a csoportban.")
+
+
+
+
+
 
 
 
             # ---------------- Itt jönnek a grafikonok ----------------
-            # ---------------- Grafikonok dinamikusan ----------------
-            import plotly.express as px
+            # ---------------- Itt jönnek a grafikonok ----------------
+            with st.expander("Utilization charts - machines, operators, robots 📊", expanded=False):
+                import plotly.express as px
 
-            def create_bar_chart(selected_row, prefix_list, entity_name):
-                """
-                Készít egy bar chart-ot az adott entitás státuszairól.
-                prefix_list: list of prefixes, pl. ["Machine T100 -", "Machine T200 -"]
-                entity_name: x tengely felirat
-                """
-                data = []
-                for prefix in prefix_list:
-                    # Az összes oszlop, ami ezzel a prefix-szel kezdődik
-                    cols = [c for c in df.columns if c.startswith(prefix)]
-                    if not cols:
-                        continue
-                    total = selected_row[cols].sum()
-                    # Státuszok és arányok
-                    for col in cols:
-                        status = col.split("-")[-1].strip()
-                        percent = (selected_row[col] / total * 100) if total > 0 else 0
-                        # Itt már a teljes prefixet használjuk a gép/robot neveként
-                        entity_full_name = prefix.replace(" -", "").strip()  # pl. Machine T100
-                        data.append({entity_name: entity_full_name, "Status": status, "Ratio (%)": percent})
-                plot_df = pd.DataFrame(data)
-                
-                fig = px.bar(
-                    plot_df,
-                    x=entity_name,
-                    y="Ratio (%)",
-                    color="Status",
-                    text="Ratio (%)",
-                    title=f"{entity_name} utilization (%)"
-                )
-                fig.update_traces(texttemplate='%{text:.1f}%', textposition="inside")
-                fig.update_layout(yaxis=dict(ticksuffix="%"))
-                st.plotly_chart(fig)
+                def create_bar_chart(selected_row, prefix_list, entity_name):
+                    """
+                    Készít egy bar chart-ot az adott entitás státuszairól.
+                    prefix_list: list of prefixes, pl. ["Machine T100 -", "Machine T200 -"]
+                    entity_name: x tengely felirat
+                    """
+                    data = []
+                    for prefix in prefix_list:
+                        # Az összes oszlop, ami ezzel a prefix-szel kezdődik
+                        cols = [c for c in df.columns if c.startswith(prefix)]
+                        if not cols:
+                            continue
+                        total = selected_row[cols].sum()
+                        # Státuszok és arányok
+                        for col in cols:
+                            status = col.split("-")[-1].strip()
+                            percent = (selected_row[col] / total * 100) if total > 0 else 0
+                            entity_full_name = prefix.replace(" -", "").strip()  # pl. Machine T100
+                            data.append({entity_name: entity_full_name, "Status": status, "Ratio (%)": percent})
+                    plot_df = pd.DataFrame(data)
+                    
+                    fig = px.bar(
+                        plot_df,
+                        x=entity_name,
+                        y="Ratio (%)",
+                        color="Status",
+                        text="Ratio (%)",
+                        title=f"{entity_name} utilization (%)"
+                    )
+                    fig.update_traces(texttemplate='%{text:.1f}%', textposition="inside")
+                    fig.update_layout(yaxis=dict(ticksuffix="%"))
+                    st.plotly_chart(fig)
 
-            # Gépek
-            machine_prefixes = ["Machine T100 -", "Machine T200 -", "Machine T800 -"]
-            create_bar_chart(selected_row, machine_prefixes, "Machines")
+                # Gépek
+                machine_prefixes = ["Machine T100 -", "Machine T200 -", "Machine T800 -"]
+                create_bar_chart(selected_row, machine_prefixes, "Machines")
 
-            # Operátorok (WP)
-            wp_prefixes = ["Operator 01 -", "Operator 02 -", "Operator 03 -"]
-            create_bar_chart(selected_row, wp_prefixes, "Operator(s)")
+                # Operátorok (WP)
+                wp_prefixes = ["Operator 01 -", "Operator 02 -", "Operator 03 -"]
+                create_bar_chart(selected_row, wp_prefixes, "Operator(s)")
 
-            # Robotok
-            robot_prefixes = ["Robot 01 -", "Robot 02 -"]
-            create_bar_chart(selected_row, robot_prefixes, "Robot(s)")
+                # Robotok
+                robot_prefixes = ["Robot 01 -", "Robot 02 -"]
+                create_bar_chart(selected_row, robot_prefixes, "Robot(s)")
+
 
 
 
