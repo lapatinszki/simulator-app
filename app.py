@@ -17,7 +17,7 @@ if "current_tab" not in st.session_state:
 # --- LOGIN KEZELÉS ---
 if not st.session_state.logged_in:
     st.image("header.png", use_container_width=True)
-    st.title("Welcome to the Game 🎮")
+    st.subheader("Welcome to the Game 🎮")
     email = st.text_input("Enter your e-mail address:")
     nickname = st.text_input("Enter your nickname:")
     if st.button("Login"):
@@ -33,7 +33,7 @@ if not st.session_state.logged_in:
 # --- JÁTÉK LEÍRÁS OLDAL ---
 elif st.session_state.show_game_intro:
     st.image("header.png", use_container_width=True)
-    st.title("Game description 📋")
+    st.subheader("Game description 📋")
     st.markdown("""
     Welcome to the ultimate game simulation!  
     In this game, you will select parameters for your manufacturing setup,  
@@ -47,7 +47,7 @@ elif st.session_state.show_game_intro:
 # --- JÁTÉK FELÜLET ---
 else:
     st.image("header.png", use_container_width=True)
-    st.title(f"Let's play the game, {st.session_state.nickname}! 👋")
+    st.subheader(f"Let's play the game, {st.session_state.nickname}! 👋")
 
     @st.cache_data
     def load_data():
@@ -393,3 +393,4 @@ else:
                     # Scroll vissza a tetejére
                     components.html("<script>window.scrollTo(0,0);</script>", height=0)
                     st.rerun()  # Újrarender
+
