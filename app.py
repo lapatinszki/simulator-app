@@ -2,6 +2,11 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import streamlit.components.v1 as components
+import hashlib
+
+import app_modify_talbes
+import app_display_results
+import app_display_parameters
 
 
 # --- SESSION STATE INIT ---
@@ -13,27 +18,60 @@ if "attempts" not in st.session_state:
     st.session_state.attempts = [None]*5
 if "current_tab" not in st.session_state:
     st.session_state.current_tab = 0
+if "show_summary" not in st.session_state:
+    st.session_state.show_summary = False
 
 # --- LOGIN KEZELÉS ---
 if not st.session_state.logged_in:
     st.image("header.png", use_container_width=True)
-    st.subheader("Welcome to the Game 🎮")
-    email = st.text_input("Enter your e-mail address:")
-    nickname = st.text_input("Enter your nickname:")
+    st.subheader("Welcome to the Game! 🎮")
+    email = st.text_input("Enter your e-mail address:", placeholder="It will not be shown publicly.")
+    nickname = st.text_input("Enter your nickname:", placeholder="This will be your public identifier.")
+
+    # A részletes Terms szöveg külön szakaszban
+    #with st.expander("Detailed Terms and Conditions"):
+    st.markdown(
+        """
+        <div style='font-size:12px; line-height:1.4;'>
+        I hereby consent to IDM Systems Zrt. using my personal data (email address, nickname) 
+        in connection with the "Let's play a game" for the duration of the online game 
+        10.01.2025 – 10.02.2025.  
+        I understand that I may withdraw my consent at any time by contacting [*] via email.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    agree = st.checkbox(" I agree to the Terms and Conditions")
+    
+    
     if st.button("Login"):
-        if email and nickname:
-            st.session_state.logged_in = True
-            st.session_state.email = email
-            st.session_state.nickname = nickname
-            st.session_state.show_game_intro = True
-            st.rerun()
-        else:
-            st.warning("Please enter both e-mail and nickname!")
+            if email and nickname and agree:
+                # Attempt login
+                players = app_modify_talbes.login_player(nickname, email)
+
+                if players is None:
+                    # Player already exists
+                    st.warning(f"The nickname '{nickname}' is already taken. Please choose another one.")
+                else:
+                    # Login successful
+                    st.session_state.logged_in = True
+                    st.session_state.email = hashlib.sha256(email.encode()).hexdigest()
+                    st.session_state.nickname = nickname
+                    st.session_state.show_game_intro = True
+
+                    st.success(f"Welcome, {nickname}!")
+                    st.rerun()
+            else:
+                if email == "" or nickname == "":
+                    st.warning("Please enter both e-mail and nickname!")
+                if not agree:
+                    st.warning("You must agree to the terms and conditions to proceed.")
 
 # --- JÁTÉK LEÍRÁS OLDAL ---
 elif st.session_state.show_game_intro:
     st.image("header.png", use_container_width=True)
-    st.subheader("Game description 📋")
+    st.subheader("**Game description** 📋")
     st.markdown("""
     Welcome to the ultimate game simulation!  
     In this game, you will select parameters for your manufacturing setup,  
@@ -44,10 +82,31 @@ elif st.session_state.show_game_intro:
         st.session_state.show_game_intro = False
         st.rerun()
 
+# --- VÉGEREDMÉNY FELÜLET ---
+elif st.session_state.show_summary:
+    st.image("header.png", use_container_width=True)
+    st.subheader("Final Results 🏆")
+
+    # Maximum profit a játékos összes attempt-jából
+    attempts = [a for a in st.session_state.attempts if a is not None]
+    if attempts:
+        profits = [a["Profit"] for a in attempts]
+        max_profit = max(profits)
+
+        rank = app_modify_talbes.get_rank_for_profit(max_profit)
+        st.success(f"Your best profit: **{max_profit:.2f} €**")
+        st.info(f"Your best attempt placed you at rank **#{rank}** on the current leaderboard.")
+
+    else:
+        st.warning("No attempts recorded.")
+
+    st.markdown("⚠️ You cannot go back to the game!")
+
 # --- JÁTÉK FELÜLET ---
 else:
+
     st.image("header.png", use_container_width=True)
-    st.subheader(f"Let's play the game, {st.session_state.nickname}! 👋")
+    st.subheader(f"Let's play the game, {st.session_state.nickname}!")
 
     @st.cache_data
     def load_data():
@@ -92,13 +151,9 @@ else:
                 row_index = df[mask].index[0]
 
                 profit = selected_row.get("Profit", None)  # vagy selected_row["Profit"]
+                profit_float = float(profit)
+                profit_str = f"{profit_float:10.3f}"
 
-                try:
-                    profit_float = float(profit)
-                    profit_str = f"{profit_float:10.3f}"
-                except (TypeError, ValueError):
-                    profit_str = "N/A"
-                    st.warning(f"Profit érték nem szám! Talált sor a DataFrame {row_index}. indexű sora.")
 
                 tab_labels.append(f"Attempt {idx+1}     - **Profit: {profit_str} €**")
 
@@ -106,63 +161,42 @@ else:
     selected_tab = st.radio("Select attempt:", selectable_tabs, index=st.session_state.current_tab, format_func=lambda x: x)
     i = tab_labels.index(selected_tab)
 
+
+
+
     # --- Paraméterek kiválasztása ---
     if st.session_state.attempts[i] is None:
+
         st.subheader("Select parameters")
-        selections = {}
-        cols = st.columns(3)
+        selections = app_display_parameters.display_inputs(param_cols)
 
-        # Fix értékek: label -> kulcs
-        param_options = {
-            "Size of the batches": {"8 pcs": 1, "24 pcs": 2, "40 pcs": 3},
-            "Type of the shipping box": {"Small": 1, "Medium": 2, "Large": 3},
-            "Cycle time factor": {-20: -0.2, -10: -0.1, 0: 0, 10: 0.1, 20: 0.2},
-            "Number of the operators": {"1 pcs": 1, "2 pcs": 2, "3 pcs": 3},
-            "Type of the quality check": {"End of the line": 1, "All machine": 2},
-            "Percentage of the quality check": {0: 0, 20: 0.2, 40: 0.4, 60: 0.6, 80: 0.8, 100: 1},
-            "Overshooting": {0: 0, 10: 0.1, 20: 0.2, 30: 0.3}
-        }
-
-        selections = {}
-        for idx, col_name in enumerate(param_cols):
-            col = cols[idx % 3]
-            with col:
-                label = f"{col_name}:"
-                
-                if col_name in ["Cycle time factor", "Percentage of the quality check", "Overshooting"]:
-                    # Slider float típusú
-                    keys = sorted(param_options[col_name].keys())
-                    min_val = float(keys[0])
-                    max_val = float(keys[-1])
-                    if len(keys) > 1:
-                        step_val = float(keys[1] - keys[0])
-                    else:
-                        step_val = 1.0
-                    default_val = float(keys[len(keys)//2])
-                    selections[col_name] = st.slider(
-                        label,
-                        min_value=min_val,
-                        max_value=max_val,
-                        step=step_val,
-                        value=default_val,
-                        format="%g"
-                    )
-                    # Kereséshez a kulcsérték
-                    selections[col_name] = param_options[col_name][int(selections[col_name])]
-                else:
-                    options = list(param_options[col_name].keys())
-                    selected_label = st.radio(label, options, index=0)
-                    selections[col_name] = param_options[col_name][selected_label]
-                
-                # Elválasztó a widget alatt
-                st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True)
-
-
-
+        # --- Simuláció futtatása GOMB ---
         if st.button("Run the simulation!"):
-            st.session_state.attempts[i] = selections
-            st.rerun()
+            # --- Megtaláljuk a kiválasztott paramétereknek megfelelő sort ---
+            mask = pd.Series([True]*len(df))
+            for col_name in param_cols:
+                mask &= df[col_name] == selections[col_name]
 
+            if mask.sum() == 0:
+                st.error("No row found for the selected parameter combination.")
+            else:
+                selected_row = df[mask].iloc[0]  # csak egy sor kell
+
+                # --- Profit biztonságos kiolvasása ---
+                profit_value = float(selected_row.get("Profit", 0.0))
+
+                # --- Player attempt frissítése ---
+                app_modify_talbes.update_player_attempt(st.session_state.nickname, st.session_state.email, profit_value)
+                app_modify_talbes.update_leaderboard(st.session_state.nickname, profit_value)
+
+                # --- Attempt mentése Profit-tal együtt ---
+                selections_with_profit = selections.copy()
+                selections_with_profit["Profit"] = profit_value
+                st.session_state.attempts[i] = selections_with_profit
+
+                st.rerun()
+
+    #------- Eredmények megjelenítése ---
     else:
         selections = st.session_state.attempts[i]
 
@@ -177,220 +211,31 @@ else:
             # Megtalált sor
             selected_row = df[mask].iloc[0]
             row_index = df[mask].index[0]  # DataFrame sor indexe
-
-            # Profit olvasás biztonságosan
-            profit = selected_row.get("Profit", None)
-            if profit is not None:
-                profit_rounded = round(profit, 3)
-                profit_str = f"{profit_rounded:>10.3f}"
-            else:
-                profit_str = "N/A"
-                st.warning(f"Profit érték nem található. A megtalált sor a DataFrame {row_index}. indexű sora.")
-
-            # ---------------- Kódok jelentés és mértékegység ----------------
-            code_meanings = {
-                "Size of the batches": {1: 8, 2: 24, 3: 40},
-                "Type of the shipping box": {1: "Small", 2: "Medium", 3: "Large"},
-                "Cycle time factor": {1: 1, 2: 2, 3: 3},
-                "Type of the quality check": {1: "End of the line", 2: "All machine"},
-                "Percentage of the quality check": {0: 0, 0.2: 20, 0.4: 40, 0.6: 60, 0.8: 80, 1: 100},
-                "Overshooting": {0: 0, 0.1: 10, 0.2: 20, 0.3: 30},
-                "Reached the required amount": {99: "No", 1: "Yes"}
-                # A többi paraméternél nincs kód, értékét használjuk
-            }
-
-            units = {
-                "Size of the batches": "[pcs]",
-                "Type of the shipping box": "",
-                "Cycle time factor": "[%]",
-                "Number of the operators": "[operator(s)]",
-                "Type of the quality check": "",
-                "Percentage of the quality check": "[%]",
-                "Overshooting": "[%]",
-                "Elapsed time": "",
-                "Used rods": "[pcs]",
-                "Used raw bases": "[pcs]",
-                "Used pins": "[pcs]",
-                "Outcome - All": "[pcs]",
-                "Outcome - OK": "[pcs]",
-                "Outcome - NOK": "[pcs]",
-                "Used retail boxes": "[pcs]",
-                "Used shipper boxes": "[pcs]",
-                "Used pallets": "[pcs]",
-                "Reached the required amount": "",
-                "Difference from the required - OK": "[pcs]",
-                "Difference from the required - All": "[pcs]",
-                "Used electricity - T100": "[kW]",
-                "Used electricity - T200": "[kW]",
-                "Used electricity - T800": "[kW]",
-                "Income": "[€]",
-                "Outgo": "[€]",
-                "Profit": "[€]"
-            }
-
-            # Profit oszlop index
-            profit_index = df.columns.get_loc("Profit")
-            cols_to_show = list(df.columns[:profit_index + 1])  # Profit is benne
-
-            # Táblázat készítése biztonságosan
-            values_with_units = []
-            for col in cols_to_show:
-                if col == "Profit":
-                    values_with_units.append(f"{profit_str} {units.get(col,'')}")
-                else:
-                    # Ha van jelentés a kódhoz, azt használjuk, különben a raw értéket
-                    if col in code_meanings:
-                        value = code_meanings[col].get(selected_row[col], selected_row[col])
-                    else:
-                        value = selected_row[col]
-                    values_with_units.append(f"{value} {units.get(col,'')}")
-
-            result_df = pd.DataFrame({
-                "Parameter": cols_to_show,
-                "Value": values_with_units
-            })
-
-            # ---------------- Csoportosított megjelenítés ----------------
-            groups = {
-                "Finances 💸": [
-                    "Income", "Outgo", "Profit"
-                ],
-                "Input parameters ➡️": [
-                    "Size of the batches", "Type of the shipping box", "Cycle time factor",
-                    "Number of the operators", "Type of the quality check",
-                    "Percentage of the quality check", "Overshooting"
-                ],
-                "Shipping details 🚚": [
-                    "Elapsed time", "Outcome - All", "Outcome - OK", "Outcome - NOK",
-                    "Reached the required amount", "Difference from the required - OK",
-                    "Difference from the required - All"
-                ],
-                "Used raw and packing materials 📦": [
-                    "Used rods", "Used raw bases", "Used pins", "Used retail boxes",
-                    "Used shipper boxes", "Used pallets"
-                ],
-                "Energy consumption ⚡": [
-                    "Used electricity - T100", "Used electricity - T200", "Used electricity - T800"
-                ]
-            }
-
-            st.subheader("Results by groups")
-
-            for group_name, cols in groups.items():
-                expanded_state = True if group_name == "Finances 💸" else False
-
-                with st.expander(group_name, expanded=expanded_state):
-                    display_data = []
-                    for col in cols:
-                        if col not in df.columns:
-                            continue
-
-                        # Az érték mértékegységgel, Profit 2 tizedesjeggyel
-                        if col == "Profit":
-                            profit_float = float(profit_str)
-                            value = f"{profit_float:.2f} {units.get(col,'')}"
-                        else:
-                            if col in code_meanings:
-                                val = code_meanings[col].get(selected_row[col], selected_row[col])
-                            else:
-                                val = selected_row[col]
-                            value = f"{val} {units.get(col,'')}"
-
-                        display_data.append({
-                            "Parameter": col,
-                            "Value": value
-                        })
-
-                    if display_data:
-                        group_df = pd.DataFrame(display_data)
-
-                        def highlight_profit(row):
-                            styles = [''] * len(row)
-                            for i, param in enumerate(group_df['Parameter']):
-                                if param == 'Profit':
-                                    try:
-                                        val = float(profit_str)
-                                        color = 'green' if val > 0 else 'red'
-                                    except:
-                                        color = 'black'
-                                    styles[i] = f'color: {color}; font-weight: bold'
-                            return styles
-
-                        styled_df = group_df.style.apply(highlight_profit, axis=0)
-                        st.dataframe(styled_df, use_container_width=True, hide_index=True)
-
-
-
-                    else:
-                        st.info("Nincs adat ebben a csoportban.")
+            
+            app_display_results.create_tables(selected_row, row_index, df)
+            app_display_results.display_tables(selected_row, df)
+            app_display_results.display_charts(selected_row, df)
 
 
 
 
 
-
-
-
-            # ---------------- Itt jönnek a grafikonok ----------------
-            # ---------------- Itt jönnek a grafikonok ----------------
-            with st.expander("Utilization charts - machines, operators, robots 📊", expanded=False):
-                import plotly.express as px
-
-                def create_bar_chart(selected_row, prefix_list, entity_name):
-                    """
-                    Készít egy bar chart-ot az adott entitás státuszairól.
-                    prefix_list: list of prefixes, pl. ["Machine T100 -", "Machine T200 -"]
-                    entity_name: x tengely felirat
-                    """
-                    data = []
-                    for prefix in prefix_list:
-                        # Az összes oszlop, ami ezzel a prefix-szel kezdődik
-                        cols = [c for c in df.columns if c.startswith(prefix)]
-                        if not cols:
-                            continue
-                        total = selected_row[cols].sum()
-                        # Státuszok és arányok
-                        for col in cols:
-                            status = col.split("-")[-1].strip()
-                            percent = (selected_row[col] / total * 100) if total > 0 else 0
-                            entity_full_name = prefix.replace(" -", "").strip()  # pl. Machine T100
-                            data.append({entity_name: entity_full_name, "Status": status, "Ratio (%)": percent})
-                    plot_df = pd.DataFrame(data)
+            # ---------------------------------------------------------------------
+            # ---------------------------------------------------------------------
+            # Csak akkor jelenjen meg a "New attempt" gomb és a "View results" gomb,
+            # ha az aktuális attemptnél vagyunk
+            if i == st.session_state.current_tab:
+                cols_buttons = st.columns(2)  # Két oszlop, gombok mellé
+                # New attempt gomb
+                if i < total_attempts - 1 and st.session_state.attempts[i+1] is None:
+                    if st.button("New attempt 🔄", key=f"new_attempt_{i}"):
+                        st.session_state.current_tab = i + 1
+                        components.html("<script>window.scrollTo(0,0);</script>", height=0)
+                        st.rerun()
+                # Finish the game gomb
+                
+                if st.button("Finish the game 🏁", key=f"view_results_{i}"):
+                    st.session_state.show_summary = True
+                    st.rerun()
                     
-                    fig = px.bar(
-                        plot_df,
-                        x=entity_name,
-                        y="Ratio (%)",
-                        color="Status",
-                        text="Ratio (%)",
-                        title=f"{entity_name} utilization (%)"
-                    )
-                    fig.update_traces(texttemplate='%{text:.1f}%', textposition="inside")
-                    fig.update_layout(yaxis=dict(ticksuffix="%"))
-                    st.plotly_chart(fig)
-
-                # Gépek
-                machine_prefixes = ["Machine T100 -", "Machine T200 -", "Machine T800 -"]
-                create_bar_chart(selected_row, machine_prefixes, "Machines")
-
-                # Operátorok (WP)
-                wp_prefixes = ["Operator 01 -", "Operator 02 -", "Operator 03 -"]
-                create_bar_chart(selected_row, wp_prefixes, "Operator(s)")
-
-                # Robotok
-                robot_prefixes = ["Robot 01 -", "Robot 02 -"]
-                create_bar_chart(selected_row, robot_prefixes, "Robot(s)")
-
-
-
-
-            # ---------------------------------------------------------------------
-            # ---------------------------------------------------------------------
-            # --- New attempt gomb ---
-            if i < total_attempts - 1:  # Ha még nem az utolsó attempt
-                if st.button("New attempt", key=f"new_attempt_{i}"):
-                    st.session_state.current_tab = i + 1  # Következő attempt
-                    # Scroll vissza a tetejére
-                    components.html("<script>window.scrollTo(0,0);</script>", height=0)
-                    st.rerun()  # Újrarender
-
+                st.warning("⚠️ Once you finish the game, you cannot return to attempts!")
