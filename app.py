@@ -106,7 +106,7 @@ elif st.session_state.show_summary:
 else:
 
     st.image("header.png", use_container_width=True)
-    st.subheader(f"Let's play the game, {st.session_state.nickname}!")
+    st.subheader(f"Let's play the game, {st.session_state.nickname}! 🎮")
 
     @st.cache_data
     def load_data():
@@ -239,3 +239,4 @@ else:
                     st.rerun()
                     
                 st.warning("⚠️ Once you finish the game, you cannot return to attempts!")
+
