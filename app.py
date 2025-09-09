@@ -5,7 +5,7 @@ import hashlib
 import sys
 import os
 
-import app_modify_tables
+#import app_modify_tables
 import app_modify_GitTable
 import app_display_results
 import app_display_parameters
@@ -275,3 +275,4 @@ else:
                     st.rerun()
                     
                 st.warning("⚠️ Once you finish the game, you cannot return to attempts!")
+
