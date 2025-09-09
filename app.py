@@ -132,7 +132,7 @@ else:
     df = load_data()
 
     #Paraméterek
-    param_cols = app_display_parameters.param_cols
+    from app_display_parameters import param_cols
 
     total_attempts = 5
     current_attempt_display = st.session_state.current_tab + 1
@@ -249,3 +249,4 @@ else:
                     st.rerun()
                     
                 st.warning("⚠️ Once you finish the game, you cannot return to attempts!")
+
