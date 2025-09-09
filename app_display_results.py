@@ -174,4 +174,3 @@ def display_charts(selected_row, df):
         # Robotok
         robot_prefixes = ["Robot 01 -", "Robot 02 -"]
         create_bar_chart(selected_row, robot_prefixes, "Robot(s)")
-
