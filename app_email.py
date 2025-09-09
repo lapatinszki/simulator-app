@@ -14,7 +14,7 @@ def send_email(email, email_hash, nickname):
     msg['To'] = receiver_email
     msg['Subject'] = f"Új belépés: {nickname}"
 
-    body = f"Felhasználó email: {email}\Email hash kód: {email_hash}\nNickname: {nickname}"
+    body = f"Felhasználó email: {email}\nEmail hash kód: {email_hash}\nNickname: {nickname}"
     msg.attach(MIMEText(body, 'plain'))
 
     server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -22,4 +22,5 @@ def send_email(email, email_hash, nickname):
     server.login(sender_email, app_password)
     server.sendmail(sender_email, receiver_email, msg.as_string())
     server.quit()
+
 
