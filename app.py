@@ -127,7 +127,16 @@ else:
     df = load_data()
 
     #Paraméterek
-    from app_display_parameters import param_cols
+    # ---------------- Paraméterek  ----------------
+    param_cols = {
+        "Size of the batches": "Size of the batches",
+        "Type of the shipping box": "Size of the shipping box",
+        "Cycle time factor": "Machine - Cycle time factor [%]",
+        "Number of the operators": "Number of the operators",
+        "Type of the quality check": "Type of the quality check",
+        "Percentage of the quality check": "Percentage of the quality check [%]",
+        "Overshooting": "Overshooting [%]"
+    }
 
     total_attempts = 5
     current_attempt_display = st.session_state.current_tab + 1
@@ -244,6 +253,7 @@ else:
                     st.rerun()
                     
                 st.warning("⚠️ Once you finish the game, you cannot return to attempts!")
+
 
 
 
