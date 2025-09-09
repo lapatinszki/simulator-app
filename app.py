@@ -5,7 +5,7 @@ import hashlib
 import sys
 import os
 
-#import app_modify_tables
+import app_modify_tables
 import app_modify_GitTable
 import app_display_results
 import app_display_parameters
@@ -65,8 +65,8 @@ if not st.session_state.logged_in:
         print(theme)
         if email and nickname and agree:
             # Attempt login
-            #players = app_modify_tables.login_player(nickname, email)
-            players = app_modify_GitTable.login_player(nickname, email, "lapatinszki/simulator-app")
+            players = app_modify_tables.login_player(nickname, email)
+            #players = app_modify_GitTable.login_player(nickname, email, "lapatinszki/simulator-app")
 
             if players is None:
                 # Player already exists
@@ -125,8 +125,8 @@ elif st.session_state.show_summary:
         profits = [a["Profit"] for a in attempts]
         max_profit = max(profits)
 
-        #rank = app_modify_tables.get_rank_for_profit(max_profit)
-        rank = app_modify_GitTable.get_rank_for_profit(max_profit, "lapatinszki/simulator-app")
+        rank = app_modify_tables.get_rank_for_profit(max_profit)
+        #rank = app_modify_GitTable.get_rank_for_profit(max_profit, "lapatinszki/simulator-app")
 
         st.success(f"Your best profit: **{max_profit:.2f} €**")
         st.info(f"Your best attempt placed you at rank **#{rank}** on the current leaderboard.")
@@ -218,11 +218,11 @@ else:
                 app_display_results.play_the_GIF()
 
                 # --- Player attempt frissítése ---
-                #app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
-                #app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
+                app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
+                app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
 
-                app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
-                app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
+                #app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
+                #app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
 
                 # --- Attempt mentése Profit-tal együtt ---
                 selections_with_profit = selections.copy()
@@ -275,4 +275,3 @@ else:
                     st.rerun()
                     
                 st.warning("⚠️ Once you finish the game, you cannot return to attempts!")
-
