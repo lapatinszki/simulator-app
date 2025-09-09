@@ -1,12 +1,13 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import streamlit.components.v1 as components
 import hashlib
+import os
 
 import app_modify_talbes
 import app_display_results
 import app_display_parameters
+import app_email
 
 
 # --- SESSION STATE INIT ---
@@ -21,15 +22,16 @@ if "current_tab" not in st.session_state:
 if "show_summary" not in st.session_state:
     st.session_state.show_summary = False
 
-# --- LOGIN KEZELÉS ---
+# ------------------ LOGIN KEZELÉS ------------------
 if not st.session_state.logged_in:
     st.image("header.png", use_container_width=True)
     st.subheader("Welcome to the Game! 🎮")
-    email = st.text_input("Enter your e-mail address:", placeholder="It will not be shown publicly.")
-    nickname = st.text_input("Enter your nickname:", placeholder="This will be your public identifier.")
+    email = st.text_input("**Enter your e-mail address:** - *it will not be shown publicly*", placeholder="letsplayagame@gmail.com")
+    nickname = st.text_input("**Enter your nickname:** - *this will be your public identifier*", placeholder="I am the winner")
 
     # A részletes Terms szöveg külön szakaszban
     #with st.expander("Detailed Terms and Conditions"):
+    agree = st.checkbox("I agree to the Terms and Conditions")
     st.markdown(
         """
         <div style='font-size:12px; line-height:1.4;'>
@@ -41,10 +43,8 @@ if not st.session_state.logged_in:
         """,
         unsafe_allow_html=True
     )
+    st.markdown("") #Üres sor
 
-    agree = st.checkbox(" I agree to the Terms and Conditions")
-    
-    
     if st.button("Login"):
             if email and nickname and agree:
                 # Attempt login
@@ -56,11 +56,17 @@ if not st.session_state.logged_in:
                 else:
                     # Login successful
                     st.session_state.logged_in = True
-                    st.session_state.email = hashlib.sha256(email.encode()).hexdigest()
+                    st.session_state.email_hash = hashlib.sha256(email.encode()).hexdigest()
                     st.session_state.nickname = nickname
-                    st.session_state.show_game_intro = True
+                    
+                    #E-mail küldése bejenlentkezésről! -- Csak guthubos deploy esetén menjen ki az e-mail
+                    if "STREMLIT_RUNTIME" in os.environ:
+                        app_email.send_email(email, st.session_state.email_hash, nickname)
+                    else:
+                        print("Not sending e-mail in local run.")
+                    email = "" #RESET AZONNAL!
 
-                    st.success(f"Welcome, {nickname}!")
+                    st.session_state.show_game_intro = True
                     st.rerun()
             else:
                 if email == "" or nickname == "":
@@ -68,7 +74,11 @@ if not st.session_state.logged_in:
                 if not agree:
                     st.warning("You must agree to the terms and conditions to proceed.")
 
-# --- JÁTÉK LEÍRÁS OLDAL ---
+
+
+
+
+# ------------------ JÁTÉK LEÍRÁS OLDAL -------------------
 elif st.session_state.show_game_intro:
     st.image("header.png", use_container_width=True)
     st.subheader("**Game description** 📋")
@@ -82,10 +92,14 @@ elif st.session_state.show_game_intro:
         st.session_state.show_game_intro = False
         st.rerun()
 
-# --- VÉGEREDMÉNY FELÜLET ---
+
+
+
+
+# ------------------ VÉGEREDMÉNY FELÜLET ------------------
 elif st.session_state.show_summary:
     st.image("header.png", use_container_width=True)
-    st.subheader("Final Results 🏆")
+    st.subheader("Final Result 🏆")
 
     # Maximum profit a játékos összes attempt-jából
     attempts = [a for a in st.session_state.attempts if a is not None]
@@ -102,7 +116,11 @@ elif st.session_state.show_summary:
 
     st.markdown("⚠️ You cannot go back to the game!")
 
-# --- JÁTÉK FELÜLET ---
+
+
+
+
+# ------------------ JÁTÉK FELÜLET ------------------
 else:
 
     st.image("header.png", use_container_width=True)
@@ -113,27 +131,13 @@ else:
         return pd.read_csv("simulation_results.csv", encoding="cp1252", header=0)
     df = load_data()
 
-    # Paraméterek
-    param_cols = [
-        "Size of the batches",
-        "Type of the shipping box",
-        "Cycle time factor",
-        "Number of the operators",
-        "Type of the quality check",
-        "Percentage of the quality check",
-        "Overshooting"
-    ]
-
-    # --- Ellenőrzés: 2-8. oszlop ---
-    expected_cols = param_cols
-    actual_cols = df.columns[1:8].tolist()  # CSV 2-8 oszlop
-    if actual_cols != expected_cols:
-        st.error(f"CSV oszlopok nem egyeznek! Talált: {actual_cols}, elvárt: {expected_cols}")
+    #Paraméterek
+    param_cols = app_display_parameters.param_cols
 
     total_attempts = 5
     current_attempt_display = st.session_state.current_tab + 1
     st.markdown(f"*You have **{total_attempts}** attempts in total. You are currently at your **{current_attempt_display}.** attempt!*")
-
+    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True)
     # --- Tab logika ---
     tab_labels = []
     for idx in range(total_attempts):
@@ -164,11 +168,13 @@ else:
 
 
 
-    # --- Paraméterek kiválasztása ---
+    # ------------------------ Paraméterek kiválasztása ------------------------
     if st.session_state.attempts[i] is None:
+        st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True)
+        st.subheader("Select input parameters")
+        attempt_idx = st.session_state.current_tab
+        selections = app_display_parameters.display_inputs(attempt_idx)
 
-        st.subheader("Select parameters")
-        selections = app_display_parameters.display_inputs(param_cols)
 
         # --- Simuláció futtatása GOMB ---
         if st.button("Run the simulation!"):
@@ -185,8 +191,11 @@ else:
                 # --- Profit biztonságos kiolvasása ---
                 profit_value = float(selected_row.get("Profit", 0.0))
 
+                #GIF lejátszása:
+                app_display_results.play_the_GIF()
+
                 # --- Player attempt frissítése ---
-                app_modify_talbes.update_player_attempt(st.session_state.nickname, st.session_state.email, profit_value)
+                app_modify_talbes.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
                 app_modify_talbes.update_leaderboard(st.session_state.nickname, profit_value)
 
                 # --- Attempt mentése Profit-tal együtt ---
@@ -196,7 +205,7 @@ else:
 
                 st.rerun()
 
-    #------- Eredmények megjelenítése ---
+    # ------------------------ Eredmények megjelenítése ------------------------
     else:
         selections = st.session_state.attempts[i]
 
@@ -212,7 +221,8 @@ else:
             selected_row = df[mask].iloc[0]
             row_index = df[mask].index[0]  # DataFrame sor indexe
             
-            app_display_results.create_tables(selected_row, row_index, df)
+
+            #Eredmények:
             app_display_results.display_tables(selected_row, df)
             app_display_results.display_charts(selected_row, df)
 
@@ -239,4 +249,3 @@ else:
                     st.rerun()
                     
                 st.warning("⚠️ Once you finish the game, you cannot return to attempts!")
-
