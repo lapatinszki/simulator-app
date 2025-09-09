@@ -23,4 +23,3 @@ def send_email(email, email_hash, nickname):
     server.sendmail(sender_email, receiver_email, msg.as_string())
     server.quit()
 
-
