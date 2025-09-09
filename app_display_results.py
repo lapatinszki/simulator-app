@@ -56,7 +56,6 @@ def play_the_GIF():
 
     # Placeholder a teljes overlay-hez
     overlay_placeholder = st.empty()
-
     # HTML overlay a placeholder-ben
     overlay_html = f"""
     <div style="
@@ -65,7 +64,7 @@ def play_the_GIF():
         height: 100%;
         top: 0;
         left: 0;
-        background-color: rgba(255,255,255,0.8);
+        background-color: rgba(0, 0, 0, 0.6);
         display: flex;
         justify-content: center;
         align-items: center;
