@@ -59,12 +59,7 @@ if not st.session_state.logged_in:
                     st.session_state.email_hash = hashlib.sha256(email.encode()).hexdigest()
                     st.session_state.nickname = nickname
                     
-                    #E-mail küldése bejenlentkezésről! -- Csak guthubos deploy esetén menjen ki az e-mail
-                    #if "STREMLIT_RUNTIME" in os.environ:
                     app_email.send_email(email, st.session_state.email_hash, nickname)
-                    #else:
-                       # print("Not sending e-mail in local run.")
-                    #email = "" #RESET AZONNAL!
 
                     st.session_state.show_game_intro = True
                     st.rerun()
@@ -249,5 +244,6 @@ else:
                     st.rerun()
                     
                 st.warning("⚠️ Once you finish the game, you cannot return to attempts!")
+
 
 
