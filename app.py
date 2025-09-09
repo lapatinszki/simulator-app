@@ -2,9 +2,11 @@ import streamlit as st
 import pandas as pd
 import streamlit.components.v1 as components
 import hashlib
+import sys
 import os
 
-import app_modify_talbes
+import app_modify_tables
+import app_modify_GitTable
 import app_display_results
 import app_display_parameters
 import app_email
@@ -26,6 +28,7 @@ if "show_summary" not in st.session_state:
 if not st.session_state.logged_in:
     st.image("header.png", use_container_width=True)
     st.subheader("Welcome to the Game! 🎮")
+    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True)
     email = st.text_input("**Enter your e-mail address:** - *it will not be shown publicly*", placeholder="letsplayagame@gmail.com")
     nickname = st.text_input("**Enter your nickname:** - *this will be your public identifier*", placeholder="I am the winner")
 
@@ -45,29 +48,49 @@ if not st.session_state.logged_in:
     )
     st.markdown("") #Üres sor
 
+    # JS script hozzáadása
+    st.markdown("""
+    <script>
+    const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.body.setAttribute('data-user-theme', theme);
+    </script>
+    """, unsafe_allow_html=True)
+
+    theme = st.get_option("theme.base")  # "light" vagy "dark"
+
+
+
+
     if st.button("Login"):
-            if email and nickname and agree:
-                # Attempt login
-                players = app_modify_talbes.login_player(nickname, email)
+        print(theme)
+        if email and nickname and agree:
+            # Attempt login
+            #players = app_modify_tables.login_player(nickname, email)
+            players = app_modify_GitTable.login_player(nickname, email, "lapatinszki/simulator-app")
 
-                if players is None:
-                    # Player already exists
-                    st.warning(f"The nickname '{nickname}' is already taken. Please choose another one.")
-                else:
-                    # Login successful
-                    st.session_state.logged_in = True
-                    st.session_state.email_hash = hashlib.sha256(email.encode()).hexdigest()
-                    st.session_state.nickname = nickname
-                    
-                    app_email.send_email(email, st.session_state.email_hash, nickname)
-
-                    st.session_state.show_game_intro = True
-                    st.rerun()
+            if players is None:
+                # Player already exists
+                st.warning(f"The nickname '{nickname}' is already taken. Please choose another one.")
             else:
-                if email == "" or nickname == "":
-                    st.warning("Please enter both e-mail and nickname!")
-                if not agree:
-                    st.warning("You must agree to the terms and conditions to proceed.")
+                # Login successful
+                st.session_state.logged_in = True
+                st.session_state.email_hash = hashlib.sha256(email.encode()).hexdigest()
+                st.session_state.nickname = nickname
+                
+                #E-mail küldése bejenlentkezésről! -- Csak guthubos deploy esetén menjen ki az e-mail
+                if "STREMLIT_RUNTIME" in os.environ:
+                    app_email.send_email(email, st.session_state.email_hash, nickname)
+                else:
+                    print("Not sending e-mail in local run.")
+                email = "" #RESET AZONNAL!
+
+                st.session_state.show_game_intro = True
+                st.rerun()
+        else:
+            if email == "" or nickname == "":
+                st.warning("Please enter both e-mail and nickname!")
+            if not agree:
+                st.warning("You must agree to the terms and conditions to proceed.")
 
 
 
@@ -102,7 +125,9 @@ elif st.session_state.show_summary:
         profits = [a["Profit"] for a in attempts]
         max_profit = max(profits)
 
-        rank = app_modify_talbes.get_rank_for_profit(max_profit)
+        #rank = app_modify_tables.get_rank_for_profit(max_profit)
+        rank = app_modify_GitTable.get_rank_for_profit(max_profit, "lapatinszki/simulator-app")
+
         st.success(f"Your best profit: **{max_profit:.2f} €**")
         st.info(f"Your best attempt placed you at rank **#{rank}** on the current leaderboard.")
 
@@ -126,14 +151,10 @@ else:
         return pd.read_csv("simulation_results.csv", encoding="cp1252", header=0)
     df = load_data()
 
-    #Paraméterek
-    # ---------------- Paraméterek  ----------------
-    import sys
-    
+    #Paraméterek indexel importálás:
     repo_root = os.path.dirname(os.path.abspath(__file__))
     if repo_root not in sys.path:
         sys.path.append(repo_root)
-    
     from app_display_parameters import param_cols
 
     total_attempts = 5
@@ -197,8 +218,11 @@ else:
                 app_display_results.play_the_GIF()
 
                 # --- Player attempt frissítése ---
-                app_modify_talbes.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
-                app_modify_talbes.update_leaderboard(st.session_state.nickname, profit_value)
+                #app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
+                #app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
+
+                app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
+                app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
 
                 # --- Attempt mentése Profit-tal együtt ---
                 selections_with_profit = selections.copy()
@@ -251,8 +275,3 @@ else:
                     st.rerun()
                     
                 st.warning("⚠️ Once you finish the game, you cannot return to attempts!")
-
-
-
-
-
