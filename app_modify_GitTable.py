@@ -1,15 +1,13 @@
 import pandas as pd
 import io
-import os
 from github import Github
 import streamlit as st
 
 # -------------------------------------------------------------------------------------------
 # GitHub CSV helper
 # -------------------------------------------------------------------------------------------
-def load_csv_from_github(repo_name, file_path):
+def load_csv_from_github(repo_name, file_path, token):
     #Betölti a CSV-t GitHub repo-ból DataFrame-be.
-    token = os.environ.get("GITHUB_TOKEN")
     g = Github(token)
     repo = g.get_repo(repo_name)
     try:
@@ -23,9 +21,8 @@ def load_csv_from_github(repo_name, file_path):
         return pd.DataFrame(), None
 
 
-def save_csv_to_github(df, repo_name, file_path, sha=None, commit_message="Update CSV"):
+def save_csv_to_github(df, repo_name, file_path, token, sha=None, commit_message="Update CSV"):
     #Mentés GitHub repo-ba commit-tal.
-    token = os.environ.get("GITHUB_TOKEN")
     g = Github(token)
     repo = g.get_repo(repo_name)
     csv_buffer = io.StringIO()
@@ -44,12 +41,12 @@ def save_csv_to_github(df, repo_name, file_path, sha=None, commit_message="Updat
 # -------------------------------------------------------------------------------------------
 # Játékos login
 # -------------------------------------------------------------------------------------------
-def login_player(nickname, email_code, repo_name, players_file="table_Players.csv"):
-    players, sha = load_csv_from_github(repo_name, players_file)
+def login_player(nickname, email_code, repo_name, token, players_file="table_Players.csv"):
+    players, sha = load_csv_from_github(repo_name, players_file, token)
 
     # Ha üres, inicializáljuk
     if players.empty:
-        players = pd.DataFrame(columns=["Nickname", "E-mail_code"] + [f"Attempt_{i+1}" for i in range(10)])
+        players = pd.DataFrame(columns=["Nickname", "E-mail_code"] + [f"Attempt_{i+1}" for i in range(5)])
 
     # Ellenőrzés, hogy létezik-e a játékos
     if nickname in players["Nickname"].values:
@@ -61,15 +58,15 @@ def login_player(nickname, email_code, repo_name, players_file="table_Players.cs
             new_row["E-mail_code"] = email_code
         players = pd.concat([players, pd.DataFrame([new_row])], ignore_index=True)
 
-    save_csv_to_github(players, repo_name, players_file, sha, commit_message=f"Add player {nickname}")
+    save_csv_to_github(players, repo_name, players_file, token, sha, commit_message=f"Add player {nickname}")
     return players
 
 
 # -------------------------------------------------------------------------------------------
 # Játékos próbálkozás frissítése
 # -------------------------------------------------------------------------------------------
-def update_player_attempt(nickname, email_code, profit, repo_name, players_file="table_Players.csv"):
-    players, sha = load_csv_from_github(repo_name, players_file)
+def update_player_attempt(nickname, email_code, profit, repo_name, token, players_file="table_Players.csv"):
+    players, sha = load_csv_from_github(repo_name, players_file, token)
 
     player_index = players.index[players["Nickname"] == nickname].tolist()
     if not player_index:
@@ -89,19 +86,38 @@ def update_player_attempt(nickname, email_code, profit, repo_name, players_file=
     if not updated:
         raise ValueError(f"No empty Attempt columns left for player '{nickname}'.")
 
-    save_csv_to_github(players, repo_name, players_file, sha, commit_message=f"Update {nickname} attempt")
+    save_csv_to_github(players, repo_name, players_file, token, sha, commit_message=f"Update {nickname} attempt")
     return players
+
+
+# -------------------------------------------------------------------------------------------
+# Leaderboard frissítése
+# -------------------------------------------------------------------------------------------
+def update_leaderboard(nickname, profit, repo_name, token, leaderboard_file="table_Leaderboard.csv"):
+    lb_df, sha = load_csv_from_github(repo_name, leaderboard_file, token)
+
+    if lb_df.empty:
+        lb_df = pd.DataFrame(columns=["Nickname", "Profit"])
+
+    if nickname in lb_df["Nickname"].values:
+        current_profit = lb_df.loc[lb_df["Nickname"] == nickname, "Profit"].values[0]
+        if profit > current_profit:
+            lb_df.loc[lb_df["Nickname"] == nickname, "Profit"] = profit
+    else:
+        new_row = pd.DataFrame([{"Nickname": nickname, "Profit": profit}])
+        lb_df = pd.concat([lb_df, new_row], ignore_index=True)
+
+    lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
+    save_csv_to_github(lb_df, repo_name, leaderboard_file, token, sha, commit_message=f"Update leaderboard for {nickname}")
 
 
 # -------------------------------------------------------------------------------------------
 # Profit helyezés lekérdezése
 # -------------------------------------------------------------------------------------------
-def get_rank_for_profit(profit, repo_name, leaderboard_file="table_Leaderboard.csv"):
-    lb_df, _ = load_csv_from_github(repo_name, leaderboard_file)
+def get_rank_for_profit(profit, repo_name, token, leaderboard_file="table_Leaderboard.csv"):
+    lb_df, _ = load_csv_from_github(repo_name, leaderboard_file, token)
     if lb_df.empty:
         return 1
     lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
     rank = (lb_df["Profit"] > profit).sum() + 1
     return rank
-
-
