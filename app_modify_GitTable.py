@@ -48,7 +48,7 @@ def login_player(nickname, email_code, repo_name, players_file="table_Players.cs
 
     # Ha üres, inicializáljuk
     if players.empty:
-        players = pd.DataFrame(columns=["Nickname", "E-mail_code"] + [f"Attempt_{i+1}" for i in range(10)])
+        players = pd.DataFrame(columns=["Nickname", "E-mail_code"] + [f"Attempt_{i+1}" for i in range(5)])
 
     # Ellenőrzés, hogy létezik-e a játékos
     if nickname in players["Nickname"].values:
@@ -117,3 +117,4 @@ def get_rank_for_profit(profit, repo_name, leaderboard_file="table_Leaderboard.c
     lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
     rank = (lb_df["Profit"] > profit).sum() + 1
     return rank
+
