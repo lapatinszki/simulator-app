@@ -1,14 +1,15 @@
 import streamlit.components.v1 as components
+import streamlit as st
 
 
 def scroll_to_top():
-    components.html(
+    st.markdown(
     """
     <script>
     setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 1000);  // 1 másodperc múlva
+    }, 1000);
     </script>
     """,
-    height=0,
+    unsafe_allow_html=True
 )
