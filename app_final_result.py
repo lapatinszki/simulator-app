@@ -51,12 +51,12 @@ def calculate_results(github_token):
 
             <div class="container">
             <div class="slide-up delay-1" style='font-size:18px; margin-bottom:5px;'>
-            Your best profit: {max_profit:.2f} €
+            Your best profit: <span style="color:#F15922; font-weight:bold;">{max_profit:.2f} €</span>
             </div>
             <div class="slide-up delay-2" style='font-size:18px; margin-bottom:5px;'>
             Your rank in the current leaderboard:
             </div>
-            <div class="slide-up delay-3" style='font-size:72px; font-weight:bold; margin-bottom:5px;'>
+            <div class="slide-up delay-3" style='font-size:72px; font-weight:bold; margin-bottom:5px; color:#F15922;'>
             {rank_str}
             </div>
             <div class="slide-up delay-4" style='font-size:14px; margin-top:5px;'>
