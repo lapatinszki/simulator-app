@@ -64,7 +64,7 @@ def play_the_GIF():
         height: 100%;
         top: 0;
         left: 0;
-        background-color: #0C172D;
+        background-color: rgba(12, 23, 45, 0.95);
         display: flex;
         justify-content: center;
         align-items: center;
