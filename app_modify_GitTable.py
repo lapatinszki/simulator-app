@@ -215,10 +215,10 @@ else:
                         app_modify_tables.update_leaderboard(nickname, profit_value)
                     else:  # Cloud futtatás
                         app_modify_GitTable.update_player_attempt(
-                            nickname, email_hash, profit_value, "lapatinszki/simulator-app"
+                            nickname, email_hash, profit_value, github_token, "lapatinszki/simulator-app"
                         )
                         app_modify_GitTable.update_leaderboard(
-                            nickname, profit_value, "lapatinszki/simulator-app"
+                            nickname, profit_value, github_token, "lapatinszki/simulator-app"
                         )
 
                 # --- 2. Session_state értékek kiolvasása FŐ szálban ---
@@ -313,6 +313,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
