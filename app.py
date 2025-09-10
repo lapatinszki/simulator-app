@@ -64,12 +64,13 @@ if not st.session_state.logged_in:
     if st.button("Login"):
         if email and nickname and agree:
             # Attempt login
+            st.session_state.email_hash = hashlib.sha256(email.encode()).hexdigest()
+            st.session_state.nickname = nickname
 
-           
             if github_token == None: #Lokális futtatás
-                players = app_modify_tables.login_player(nickname, email)
+                players = app_modify_tables.login_player(nickname, st.session_state.email_hash)
             else: #Cloud futtatás
-                players = app_modify_GitTable.login_player(nickname, email, "lapatinszki/simulator-app")
+                players = app_modify_GitTable.login_player(nickname, st.session_state.email_hash, "lapatinszki/simulator-app")
                 
 
 
@@ -79,8 +80,6 @@ if not st.session_state.logged_in:
             else:
                 # Login successful
                 st.session_state.logged_in = True
-                st.session_state.email_hash = hashlib.sha256(email.encode()).hexdigest()
-                st.session_state.nickname = nickname
                 
                 #E-mail küldése bejenlentkezésről! -- Csak guthubos deploy esetén menjen ki az e-mail
                 if github_token == None: #Lokális futtatás
@@ -321,6 +320,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
