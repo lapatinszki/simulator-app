@@ -77,10 +77,10 @@ if not st.session_state.logged_in:
                 st.session_state.nickname = nickname
                 
                 #E-mail küldése bejenlentkezésről! -- Csak guthubos deploy esetén menjen ki az e-mail
-                if "STREMLIT_RUNTIME" in os.environ:
-                    app_email.send_email(email, st.session_state.email_hash, nickname)
-                else:
+                if st.secrets[general][environment] == "local
                     print("Not sending e-mail in local run.")
+                else:
+                    app_email.send_email(email, st.session_state.email_hash, nickname)
                 email = "" #RESET AZONNAL!
 
                 st.session_state.show_game_intro = True
@@ -279,3 +279,4 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
