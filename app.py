@@ -62,6 +62,8 @@ if not st.session_state.logged_in:
     """, unsafe_allow_html=True)
 
 
+    st.markdown(github_token)
+    
     if st.button("Login"):
         if email and nickname and agree:
             # Attempt login
@@ -322,3 +324,4 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
