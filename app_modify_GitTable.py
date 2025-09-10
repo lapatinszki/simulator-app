@@ -41,7 +41,7 @@ def save_csv_to_github(df, repo_name, file_path, token, sha=None, commit_message
 # -------------------------------------------------------------------------------------------
 # Játékos login
 # -------------------------------------------------------------------------------------------
-def login_player(nickname, email_code, repo_name, token, players_file="table_Players.csv"):
+def login_player(nickname, email_code, token, repo_name, players_file="table_Players.csv"):
     players, sha = load_csv_from_github(repo_name, players_file, token)
 
     # Ha üres, inicializáljuk
@@ -121,3 +121,4 @@ def get_rank_for_profit(profit, repo_name, token, leaderboard_file="table_Leader
     lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
     rank = (lb_df["Profit"] > profit).sum() + 1
     return rank
+
