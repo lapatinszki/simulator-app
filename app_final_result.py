@@ -2,14 +2,14 @@ import app_modify_GitTable, app_modify_tables
 import streamlit.components.v1 as components
 import streamlit as st
 
-def calculate_results():
+def calculate_results(github_token):
     # Maximum profit a játékos összes attempt-jából
     attempts = [a for a in st.session_state.attempts if a is not None]
     if attempts:
         profits = [a["Profit"] for a in attempts]
         max_profit = max(profits)
 
-        if st.secrets["general"]["environment"] == "local": #Lokális futtatás
+        if github_token == None: #Lokális futtatás
             rank = app_modify_tables.get_rank_for_profit(max_profit)
         else: #Cloud futtatás
             rank = app_modify_GitTable.get_rank_for_profit(max_profit, "lapatinszki/simulator-app")
