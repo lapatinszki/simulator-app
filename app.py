@@ -5,11 +5,8 @@ import hashlib
 import sys
 import os
 
-import app_modify_tables
-import app_modify_GitTable
-import app_display_results
-import app_display_parameters
-import app_email
+import app_modify_tables, app_modify_GitTable, app_display_results, app_display_parameters, app_email, app_final_result
+
 
 
 # --- SESSION STATE INIT ---
@@ -23,12 +20,14 @@ if "current_tab" not in st.session_state:
     st.session_state.current_tab = 0
 if "show_summary" not in st.session_state:
     st.session_state.show_summary = False
+if "confirm_finish" not in st.session_state:
+    st.session_state.confirm_finish = False
 
 # ------------------ LOGIN KEZELÉS ------------------
 if not st.session_state.logged_in:
     st.image("header.png", use_container_width=True)
     st.subheader("Welcome to the Game! 🎮")
-    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
     email = st.text_input("**Enter your e-mail address:** - *it will not be shown publicly*", placeholder="letsplayagame@gmail.com")
     nickname = st.text_input("**Enter your nickname:** - *this will be your public identifier*", placeholder="I am the winner")
 
@@ -56,17 +55,17 @@ if not st.session_state.logged_in:
     </script>
     """, unsafe_allow_html=True)
 
-    theme = st.get_option("theme.base")  # "light" vagy "dark"
-
-
-
-
     if st.button("Login"):
-        print(theme)
         if email and nickname and agree:
             # Attempt login
-            players = app_modify_tables.login_player(nickname, email)
-            #players = app_modify_GitTable.login_player(nickname, email, "lapatinszki/simulator-app")
+
+           
+            if st.secrets["general"]["environment"] == "local": #Lokális futtatás
+                players = app_modify_tables.login_player(nickname, email)
+            else: #Cloud futtatás
+                players = app_modify_GitTable.login_player(nickname, email, "lapatinszki/simulator-app")
+                
+
 
             if players is None:
                 # Player already exists
@@ -78,7 +77,11 @@ if not st.session_state.logged_in:
                 st.session_state.nickname = nickname
                 
                 #E-mail küldése bejenlentkezésről! -- Csak guthubos deploy esetén menjen ki az e-mail
-                app_email.send_email(email, st.session_state.email_hash, nickname)
+                if "STREMLIT_RUNTIME" in os.environ:
+                    app_email.send_email(email, st.session_state.email_hash, nickname)
+                else:
+                    print("Not sending e-mail in local run.")
+                email = "" #RESET AZONNAL!
 
                 st.session_state.show_game_intro = True
                 st.rerun()
@@ -96,6 +99,7 @@ if not st.session_state.logged_in:
 elif st.session_state.show_game_intro:
     st.image("header.png", use_container_width=True)
     st.subheader("**Game description** 📋")
+    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
     st.markdown("""
     Welcome to the ultimate game simulation!  
     In this game, you will select parameters for your manufacturing setup,  
@@ -114,24 +118,9 @@ elif st.session_state.show_game_intro:
 elif st.session_state.show_summary:
     st.image("header.png", use_container_width=True)
     st.subheader("Final Result 🏆")
+    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
-    # Maximum profit a játékos összes attempt-jából
-    attempts = [a for a in st.session_state.attempts if a is not None]
-    if attempts:
-        profits = [a["Profit"] for a in attempts]
-        max_profit = max(profits)
-
-        rank = app_modify_tables.get_rank_for_profit(max_profit)
-        #rank = app_modify_GitTable.get_rank_for_profit(max_profit, "lapatinszki/simulator-app")
-
-        st.success(f"Your best profit: **{max_profit:.2f} €**")
-        st.info(f"Your best attempt placed you at rank **#{rank}** on the current leaderboard.")
-
-    else:
-        st.warning("No attempts recorded.")
-
-    st.markdown("⚠️ You cannot go back to the game!")
-
+    app_final_result.calculate_results()
 
 
 
@@ -141,6 +130,7 @@ else:
 
     st.image("header.png", use_container_width=True)
     st.subheader(f"Let's play the game, {st.session_state.nickname}! 🎮")
+    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
     @st.cache_data
     def load_data():
@@ -156,7 +146,6 @@ else:
     total_attempts = 5
     current_attempt_display = st.session_state.current_tab + 1
     st.markdown(f"*You have **{total_attempts}** attempts in total. You are currently at your **{current_attempt_display}.** attempt!*")
-    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True)
     # --- Tab logika ---
     tab_labels = []
     for idx in range(total_attempts):
@@ -189,7 +178,7 @@ else:
 
     # ------------------------ Paraméterek kiválasztása ------------------------
     if st.session_state.attempts[i] is None:
-        st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True)
+        st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
         st.subheader("Select input parameters")
         attempt_idx = st.session_state.current_tab
         selections = app_display_parameters.display_inputs(attempt_idx)
@@ -214,11 +203,13 @@ else:
                 app_display_results.play_the_GIF()
 
                 # --- Player attempt frissítése ---
-                app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
-                app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
+                if st.secrets["general"]["environment"] == "local": #Lokális futtatás
+                    app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
+                    app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
+                else:
+                    app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
+                    app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
 
-                #app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
-                #app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
 
                 # --- Attempt mentése Profit-tal együtt ---
                 selections_with_profit = selections.copy()
@@ -256,19 +247,35 @@ else:
             # ---------------------------------------------------------------------
             # Csak akkor jelenjen meg a "New attempt" gomb és a "View results" gomb,
             # ha az aktuális attemptnél vagyunk
+            st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
             if i == st.session_state.current_tab:
-                cols_buttons = st.columns(2)  # Két oszlop, gombok mellé
                 # New attempt gomb
                 if i < total_attempts - 1 and st.session_state.attempts[i+1] is None:
-                    if st.button("New attempt 🔄", key=f"new_attempt_{i}"):
+                    if st.button("Next round! Let’s do this! 🔄", key=f"new_attempt_{i}"):
                         st.session_state.current_tab = i + 1
                         components.html("<script>window.scrollTo(0,0);</script>", height=0)
                         st.rerun()
-                # Finish the game gomb
-                
-                if st.button("Finish the game 🏁", key=f"view_results_{i}"):
-                    st.session_state.show_summary = True
-                    st.rerun()
-                    
-                st.warning("⚠️ Once you finish the game, you cannot return to attempts!")
 
+                # Csak akkor kell megerősítés, ha nem az utolsó attempt
+                is_last_attempt = (i == total_attempts - 1)
+
+                # Finish the game gomb
+                if st.button("Finish the game 🏁", key=f"view_results_{i}"):
+                    if is_last_attempt:
+                        st.session_state.show_summary = True
+                        st.rerun()
+                    else:
+                        st.session_state.confirm_finish = True
+                        st.rerun()
+
+                # Ha megerősítést kérünk
+                if st.session_state.confirm_finish:
+                    st.warning("⚠️ Are you sure you want to finish the game? You won’t be able to go back after this!")
+
+                    if st.button("✅ Yes, I’m ready for my results!", key=f"confirm_yes_{i}"):
+                        st.session_state.show_summary = True
+                        st.session_state.confirm_finish = False
+                    if st.button("❌ No, I'll keep palying!", key=f"confirm_no_{i}"):
+                        st.session_state.confirm_finish = False
+                        st.rerun()
+            
