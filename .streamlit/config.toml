@@ -1,7 +1,7 @@
 [theme]
 primaryColor="#F15922"
 backgroundColor="#0C172D"
-secondaryBackgroundColor="#1E396E"
+secondaryBackgroundColor="#11355E"
 textColor="#ffffffff"
 font="sans serif"
 base="light"  # ide kell light vagy dark, de a színeket felülírhatod
