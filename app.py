@@ -71,7 +71,7 @@ if not st.session_state.logged_in:
             if github_token == None: #Lokális futtatás
                 players = app_modify_tables.login_player(nickname, st.session_state.email_hash)
             else: #Cloud futtatás
-                players = app_modify_GitTable.login_player(nickname, st.session_state.email_hash, "lapatinszki/simulator-app")
+                players = app_modify_GitTable.login_player(nickname, st.session_state.email_hash, github_token, "lapatinszki/simulator-app")
                 
 
 
@@ -213,12 +213,8 @@ else:
                         app_modify_tables.update_player_attempt(nickname, email_hash, profit_value)
                         app_modify_tables.update_leaderboard(nickname, profit_value)
                     else:  # Cloud futtatás
-                        app_modify_GitTable.update_player_attempt(
-                        nickname, email_hash, profit_value, "lapatinszki/simulator-app"
-                    )
-                        app_modify_GitTable.update_leaderboard(
-                        nickname, profit_value, "lapatinszki/simulator-app"
-                    )
+                        app_modify_GitTable.update_player_attempt(nickname, email_hash, github_token, profit_value, "lapatinszki/simulator-app")
+                        app_modify_GitTable.update_leaderboard(nickname, profit_value, github_token, "lapatinszki/simulator-app")
 
 
                 # --- 2. Háttérszál indítása ---
@@ -310,7 +306,6 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
-
 
 
 
