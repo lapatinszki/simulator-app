@@ -33,7 +33,8 @@ except: github_token = None
 if not st.session_state.logged_in:
     st.image("header.png", use_container_width=True)
     st.subheader("Welcome to the Game! 🎮")
-    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
+    
+    st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
     email = st.text_input("**Enter your e-mail address:** - *it will not be shown publicly*", placeholder="letsplayagame@gmail.com")
     nickname = st.text_input("**Enter your nickname:** - *this will be your public identifier*", placeholder="I am the winner")
 
@@ -106,7 +107,7 @@ elif st.session_state.show_game_intro:
     app_others.scroll_to_top()
     st.image("header.png", use_container_width=True)
     st.subheader("**Game description** 📋")
-    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
+    st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
     st.markdown("""
     Welcome to the ultimate game simulation!  
     In this game, you will select parameters for your manufacturing setup,  
@@ -133,7 +134,7 @@ else:
     app_others.scroll_to_top()
     st.image("header.png", use_container_width=True)
     st.subheader(f"Let's play the game, {st.session_state.nickname}! 🎮")
-    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
+    st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
     @st.cache_data
     def load_data():
@@ -181,7 +182,7 @@ else:
 
     # ------------------------ Paraméterek kiválasztása ------------------------
     if st.session_state.attempts[i] is None:
-        st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
+        st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
         st.subheader("Select input parameters")
         attempt_idx = st.session_state.current_tab
         selections = app_display_parameters.display_inputs(attempt_idx)
@@ -273,7 +274,7 @@ else:
             # ---------------------------------------------------------------------
             # Csak akkor jelenjen meg a "New attempt" gomb és a "View results" gomb,
             # ha az aktuális attemptnél vagyunk
-            st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
+            st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
             if i == st.session_state.current_tab:
                 # New attempt gomb
                 if i < total_attempts - 1 and st.session_state.attempts[i+1] is None:
@@ -306,7 +307,6 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
-
 
 
 
