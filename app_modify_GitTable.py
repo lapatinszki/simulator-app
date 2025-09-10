@@ -1,5 +1,6 @@
 import pandas as pd
 import io
+import os
 from github import Github
 import streamlit as st
 
@@ -8,7 +9,7 @@ import streamlit as st
 # -------------------------------------------------------------------------------------------
 def load_csv_from_github(repo_name, file_path):
     #Betölti a CSV-t GitHub repo-ból DataFrame-be.
-    token = st.secrets["GITHUB_TOKEN"]
+    token = os.environ.get("GITHUB_TOKEN")
     g = Github(token)
     repo = g.get_repo(repo_name)
     try:
@@ -24,7 +25,7 @@ def load_csv_from_github(repo_name, file_path):
 
 def save_csv_to_github(df, repo_name, file_path, sha=None, commit_message="Update CSV"):
     #Mentés GitHub repo-ba commit-tal.
-    token = st.secrets["GITHUB_TOKEN"]
+    token = os.environ.get("GITHUB_TOKEN")
     g = Github(token)
     repo = g.get_repo(repo_name)
     csv_buffer = io.StringIO()
@@ -117,5 +118,3 @@ def get_rank_for_profit(profit, repo_name, leaderboard_file="table_Leaderboard.c
     lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
     rank = (lb_df["Profit"] > profit).sum() + 1
     return rank
-
-
