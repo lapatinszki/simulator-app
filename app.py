@@ -25,7 +25,7 @@ if "confirm_finish" not in st.session_state:
     st.session_state.confirm_finish = False
 
 #Local vagy Cloud:
-try: github_token = st.secrets.get("GITHUB_TOKEN")
+try: github_token = st.secrets["GITHUB_TOKEN"]
 except: github_token = None
 
 
@@ -61,8 +61,6 @@ if not st.session_state.logged_in:
     </script>
     """, unsafe_allow_html=True)
 
-    st.markdown(st.secrets.get("GITHUB_TOKEN"))
-    
     if st.button("Login"):
         if email and nickname and agree:
             # Attempt login
@@ -323,6 +321,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
