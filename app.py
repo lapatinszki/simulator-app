@@ -206,12 +206,31 @@ else:
 
 
                 # --- 0. Funkció az adatfeltöltéshez ---
-                if github_token is None:  # Lokális futtatás
-                    app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
-                    app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
-                else: #Cload futtatás
-                    app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
-                    app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
+                def update_tables():
+                    if github_token is None:  # Lokális futtatás
+                        app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
+                        app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
+                    else: #Cload futtatás
+                        app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
+                        app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
+
+
+                from concurrent.futures import ThreadPoolExecutor
+                executor = ThreadPoolExecutor(max_workers=1)
+
+                future = executor.submit(update_tables)
+
+                start_time = time.time()
+                app_display_results.play_the_GIF()
+
+                # min 5 sec várakozás
+                gif_duration = 5
+                elapsed = time.time() - start_time
+                if elapsed < gif_duration:
+                    time.sleep(gif_duration - elapsed)
+
+                # biztosan várjuk meg a futás végét
+                result = future.result()
 
 
 
@@ -299,6 +318,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
