@@ -126,7 +126,7 @@ elif st.session_state.show_summary:
     #st.image("header.png", use_container_width=True)
     #st.subheader("Final result 🏆")
     #st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
-
+    st.markdown(github_token)
     app_final_result.calculate_results(github_token)
 
 
@@ -322,6 +322,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
