@@ -87,7 +87,7 @@ def play_the_GIF():
 
 #------------------------  1. TÁBLÁZATOK megjelenítése  -------------------------------
 def display_tables(selected_row, df):
-    st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
     st.subheader("**Result by groups**")
 
     # Csoportok kigyűjtése a parameters alapján
@@ -174,3 +174,4 @@ def display_charts(selected_row, df):
         # Robotok
         robot_prefixes = ["Robot 01 -", "Robot 02 -"]
         create_bar_chart(selected_row, robot_prefixes, "Robot(s)")
+
