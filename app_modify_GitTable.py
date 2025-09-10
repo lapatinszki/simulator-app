@@ -118,3 +118,4 @@ def get_rank_for_profit(profit, repo_name, leaderboard_file="table_Leaderboard.c
     rank = (lb_df["Profit"] > profit).sum() + 1
     return rank
 
+
