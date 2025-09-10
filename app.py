@@ -25,7 +25,7 @@ if "confirm_finish" not in st.session_state:
     st.session_state.confirm_finish = False
 
 #Local vagy Cloud:
-try: github_token = st.secrets["GITHUB_TOKEN"]
+try: github_token = st.secrets.get("GITHUB_TOKEN")
 except: github_token = None
 
 
@@ -323,6 +323,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
