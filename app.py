@@ -213,8 +213,12 @@ else:
                         app_modify_tables.update_player_attempt(nickname, email_hash, profit_value)
                         app_modify_tables.update_leaderboard(nickname, profit_value)
                     else:  # Cloud futtatás
-                        app_modify_GitTable.update_player_attempt(nickname, email_hash, profit_value, "lapatinszki/simulator-app")
-                        app_modify_GitTable.update_leaderboard(nickname, profit_value, "lapatinszki/simulator-app")
+                        app_modify_GitTable.update_player_attempt(
+                        nickname, email_hash, profit_value, "lapatinszki/simulator-app"
+                    )
+                        app_modify_GitTable.update_leaderboard(
+                        nickname, profit_value, "lapatinszki/simulator-app"
+                    )
 
 
                 # --- 2. Háttérszál indítása ---
@@ -306,6 +310,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
