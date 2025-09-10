@@ -6,7 +6,7 @@ import sys, os
 import threading, time
 
 
-import app_modify_tables, app_modify_GitTable, app_display_results, app_display_parameters, app_email, app_final_result
+import app_modify_tables, app_modify_GitTable, app_display_results, app_display_parameters, app_email, app_final_result, app_others
 
 
 
@@ -322,6 +322,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
