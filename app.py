@@ -118,14 +118,11 @@ elif st.session_state.show_game_intro:
         st.rerun()
 
 
-
+    
 
 
 # ------------------ VÉGEREDMÉNY FELÜLET ------------------
 elif st.session_state.show_summary:
-    #st.image("header.png", use_container_width=True)
-    #st.subheader("Final result 🏆")
-    #st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
     app_final_result.calculate_results(github_token)
 
 
@@ -236,7 +233,6 @@ else:
 
                 # --- 4. Várjuk meg a háttér futás végét ---
                 future.result()
-
 
 
                 # --- Attempt mentése Profit-tal együtt ---
