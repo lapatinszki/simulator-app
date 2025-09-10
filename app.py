@@ -23,6 +23,11 @@ if "show_summary" not in st.session_state:
 if "confirm_finish" not in st.session_state:
     st.session_state.confirm_finish = False
 
+#Local vagy Cloud:
+try: github_token = st.secrets.get("GITHUB_TOKEN")
+except: github_token = None
+
+
 # ------------------ LOGIN KEZELÉS ------------------
 if not st.session_state.logged_in:
     st.image("header.png", use_container_width=True)
@@ -55,12 +60,13 @@ if not st.session_state.logged_in:
     </script>
     """, unsafe_allow_html=True)
 
+
     if st.button("Login"):
         if email and nickname and agree:
             # Attempt login
 
            
-            if st.secrets["general"]["environment"] == "local": #Lokális futtatás
+            if github_token == None: #Lokális futtatás
                 players = app_modify_tables.login_player(nickname, email)
             else: #Cloud futtatás
                 players = app_modify_GitTable.login_player(nickname, email, "lapatinszki/simulator-app")
@@ -77,10 +83,10 @@ if not st.session_state.logged_in:
                 st.session_state.nickname = nickname
                 
                 #E-mail küldése bejenlentkezésről! -- Csak guthubos deploy esetén menjen ki az e-mail
-                if st.secrets["general"]["environment"] == "local":
+                if github_token == None: #Lokális futtatás
                     print("Not sending e-mail in local run.")
                 else:
-                    app_email.send_email(email, st.session_state.email_hash, nickname)
+                    app_email.send_email(email, st.session_state.email_hash, nickname)    
                 email = "" #RESET AZONNAL!
 
                 st.session_state.show_game_intro = True
@@ -203,7 +209,7 @@ else:
                 app_display_results.play_the_GIF()
 
                 # --- Player attempt frissítése ---
-                if st.secrets["general"]["environment"] == "local": #Lokális futtatás
+                if github_token == None: #Lokális futtatás
                     app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
                     app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
                 else:
@@ -279,7 +285,3 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
-
-
-
-
