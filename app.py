@@ -2,8 +2,9 @@ import streamlit as st
 import pandas as pd
 import streamlit.components.v1 as components
 import hashlib
-import sys
-import os
+import sys, os
+import threading, time
+
 
 import app_modify_tables, app_modify_GitTable, app_display_results, app_display_parameters, app_email, app_final_result
 
@@ -123,7 +124,7 @@ elif st.session_state.show_game_intro:
 # ------------------ VÉGEREDMÉNY FELÜLET ------------------
 elif st.session_state.show_summary:
     st.image("header.png", use_container_width=True)
-    st.subheader("Final Result 🏆")
+    st.subheader("Final result 🏆")
     st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
     app_final_result.calculate_results(github_token)
@@ -205,16 +206,51 @@ else:
                 # --- Profit biztonságos kiolvasása ---
                 profit_value = float(selected_row.get("Profit", 0.0))
 
-                #GIF lejátszása:
-                app_display_results.play_the_GIF()
 
-                # --- Player attempt frissítése ---
-                if github_token == None: #Lokális futtatás
-                    app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
-                    app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
-                else:
-                    app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
-                    app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
+                # --- 0. Funkció az adatfeltöltéshez ---
+                def update_tables():
+                    if github_token is None:  # Lokális futtatás
+                        app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
+                        app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
+                    else: #Cload futtatás
+                        app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
+                        app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
+
+
+
+                # --- 2. Háttérszál indítása ---
+                thread = threading.Thread(target=update_tables)
+                thread.start()
+
+                # --- 3. GIF lejátszása ---
+                gif_duration = 5  # minimum idő másodpercben
+                start_time = time.time()
+                app_display_results.play_the_GIF()  # elindítja a GIF-et
+
+                # --- 4. Várakozás: legalább gif_duration, majd a szál befejezése ---
+                thread.join(timeout=gif_duration)  # várakozás maximum gif_duration-ig
+                elapsed = time.time() - start_time
+
+                # Ha a GIF-nek még futnia kell a minimum ideig
+                if elapsed < gif_duration:
+                    time.sleep(gif_duration - elapsed)
+
+                # Ha a háttérszál még fut, várunk rá
+                thread.join()
+
+
+
+
+                # #GIF lejátszása:
+                # app_display_results.play_the_GIF()
+
+                # # --- Player attempt frissítése ---
+                # if github_token == None: #Lokális futtatás
+                #     app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
+                #     app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
+                # else:
+                #     app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
+                #     app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
 
 
                 # --- Attempt mentése Profit-tal együtt ---
@@ -281,8 +317,8 @@ else:
                     if st.button("✅ Yes, I’m ready for my results!", key=f"confirm_yes_{i}"):
                         st.session_state.show_summary = True
                         st.session_state.confirm_finish = False
+                        st.rerun()
                     if st.button("❌ No, I'll keep palying!", key=f"confirm_no_{i}"):
                         st.session_state.confirm_finish = False
                         st.rerun()
             
-
