@@ -204,49 +204,53 @@ else:
 
                 # --- Profit biztonságos kiolvasása ---
                 profit_value = float(selected_row.get("Profit", 0.0))
+                
+                # --- 1. Session_state értékek kiolvasása fő szálban ---
                 nickname = st.session_state.get("nickname")
                 email_hash = st.session_state.get("email_hash")
-
-
-                # --- 1. Háttérfüggvény: paraméterekkel dolgozik, NEM session_state-tel ---
-                def update_tables(nickname, email_hash, profit_value, github_token):
-                    if github_token is None:  # Lokális futtatás
-                        app_modify_tables.update_player_attempt(nickname, email_hash, profit_value)
-                        app_modify_tables.update_leaderboard(nickname, profit_value)
-                    else:  # Cloud futtatás
+                profit_value = st.session_state.get("profit_value")  # vagy ahol tárolod
+                repo_name = "lapatinszki/simulator-app"
+                github_token = st.secrets.get("GITHUB_TOKEN")
+                
+                if not all([nickname, email_hash, profit_value, github_token]):
+                    st.error("Hiányzik valamilyen szükséges adat: nickname, email_hash, profit_value vagy GitHub token.")
+                else:
+                    # --- 2. Háttérfüggvény ---
+                    def update_tables(nickname, email_hash, profit_value, repo_name, github_token):
+                        # Cloud GitHub update
                         app_modify_GitTable.update_player_attempt(
-                            nickname, email_hash, profit_value, github_token, "lapatinszki/simulator-app"
+                            nickname=nickname,
+                            email_hash=email_hash,
+                            profit_value=profit_value,
+                            repo_name=repo_name,
+                            token=github_token
                         )
                         app_modify_GitTable.update_leaderboard(
-                            nickname, profit_value, github_token, "lapatinszki/simulator-app"
+                            nickname=nickname,
+                            profit=profit_value,
+                            repo_name=repo_name,
+                            token=github_token
                         )
-
-                # --- 2. Session_state értékek kiolvasása FŐ szálban ---
-                nickname = st.session_state.get("nickname")
-                email_hash = st.session_state.get("email_hash")
-                profit = profit_value
-                token = github_token
-
-                # Ellenőrzés: ha nincs inicializálva, jobb hibaüzenet
-                if nickname is None or email_hash is None:
-                    st.error("Hiányzik a nickname vagy az email_hash a session_state-ből.")
-                else:
+                
                     # --- 3. Háttérszál indítása ---
                     executor = ThreadPoolExecutor(max_workers=1)
-                    future = executor.submit(update_tables, nickname, email_hash, profit, token)
-
+                    future = executor.submit(update_tables, nickname, email_hash, profit_value, repo_name, github_token)
+                
                     # --- 4. GIF lejátszása ---
                     start_time = time.time()
                     app_display_results.play_the_GIF()
-
-                    # minimum várakozás
+                
+                    # Minimum gif_duration másodperc várakozás
                     gif_duration = 5
                     elapsed = time.time() - start_time
                     if elapsed < gif_duration:
                         time.sleep(gif_duration - elapsed)
-
-                    # --- 5. Várjuk meg a háttér futás végét ---
+                
+                    # --- 5. Várjuk meg a háttérszál befejezését ---
                     future.result()
+                
+                    # --- 6. Fő szálban frissítjük session_state-et, ha kell ---
+                    st.session_state["last_profit"] = profit_value
 
 
 
@@ -313,6 +317,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
