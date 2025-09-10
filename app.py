@@ -205,32 +205,47 @@ else:
                 profit_value = float(selected_row.get("Profit", 0.0))
 
 
-                # --- 0. Funkció az adatfeltöltéshez ---
-                def update_tables():
-                    if github_token is None:  # Lokális futtatás
-                        app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
-                        app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
-                    else: #Cload futtatás
-                        app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
-                        app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
-
-
                 from concurrent.futures import ThreadPoolExecutor
-                executor = ThreadPoolExecutor(max_workers=1)
+                # --- 0. Funkció az adatfeltöltéshez ---
+                # --- 1. Háttérfüggvény: paraméterekkel dolgozik, NEM session_state-tel ---
+                def update_tables(nickname, email_hash, profit_value, github_token):
+                    if github_token is None:  # Lokális futtatás
+                        app_modify_tables.update_player_attempt(nickname, email_hash, profit_value)
+                        app_modify_tables.update_leaderboard(nickname, profit_value)
+                    else:  # Cloud futtatás
+                        app_modify_GitTable.update_player_attempt(
+                            nickname, email_hash, profit_value, "lapatinszki/simulator-app"
+                        )
+                        app_modify_GitTable.update_leaderboard(
+                            nickname, profit_value, "lapatinszki/simulator-app"
+                        )
 
-                future = executor.submit(update_tables)
+                # --- 2. Session_state értékek kiolvasása FŐ szálban ---
+                nickname = st.session_state.get("nickname")
+                email_hash = st.session_state.get("email_hash")
+                profit = profit_value
+                token = github_token
 
-                start_time = time.time()
-                app_display_results.play_the_GIF()
+                # Ellenőrzés: ha nincs inicializálva, jobb hibaüzenet
+                if nickname is None or email_hash is None:
+                    st.error("Hiányzik a nickname vagy az email_hash a session_state-ből.")
+                else:
+                    # --- 3. Háttérszál indítása ---
+                    executor = ThreadPoolExecutor(max_workers=1)
+                    future = executor.submit(update_tables, nickname, email_hash, profit, token)
 
-                # min 5 sec várakozás
-                gif_duration = 5
-                elapsed = time.time() - start_time
-                if elapsed < gif_duration:
-                    time.sleep(gif_duration - elapsed)
+                    # --- 4. GIF lejátszása ---
+                    start_time = time.time()
+                    app_display_results.play_the_GIF()
 
-                # biztosan várjuk meg a futás végét
-                result = future.result()
+                    # minimum várakozás
+                    gif_duration = 5
+                    elapsed = time.time() - start_time
+                    if elapsed < gif_duration:
+                        time.sleep(gif_duration - elapsed)
+
+                    # --- 5. Várjuk meg a háttér futás végét ---
+                    future.result()
 
 
 
@@ -318,6 +333,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
