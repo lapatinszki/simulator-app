@@ -206,37 +206,16 @@ else:
 
 
                 # --- 0. Funkció az adatfeltöltéshez ---
-                def update_tables():
-                    if github_token is None:  # Lokális futtatás
-                        app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
-                        app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
-                    else: #Cload futtatás
-                        app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
-                        app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
+                if github_token is None:  # Lokális futtatás
+                    app_modify_tables.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value)
+                    app_modify_tables.update_leaderboard(st.session_state.nickname, profit_value)
+                else: #Cload futtatás
+                    app_modify_GitTable.update_player_attempt(st.session_state.nickname, st.session_state.email_hash, profit_value, "lapatinszki/simulator-app")
+                    app_modify_GitTable.update_leaderboard(st.session_state.nickname, profit_value, "lapatinszki/simulator-app")
 
 
 
-                # --- 2. Háttérszál indítása ---
-                thread = threading.Thread(target=update_tables)
-                thread.start()
-
-                # --- 3. GIF lejátszása ---
-                gif_duration = 5  # minimum idő másodpercben
-                start_time = time.time()
-                app_display_results.play_the_GIF()  # elindítja a GIF-et
-
-                # --- 4. Várakozás: legalább gif_duration, majd a szál befejezése ---
-                thread.join(timeout=gif_duration)  # várakozás maximum gif_duration-ig
-                elapsed = time.time() - start_time
-
-                # Ha a GIF-nek még futnia kell a minimum ideig
-                if elapsed < gif_duration:
-                    time.sleep(gif_duration - elapsed)
-
-                # Ha a háttérszál még fut, várunk rá
-                thread.join()
-
-
+            
 
 
                 # #GIF lejátszása:
@@ -320,6 +299,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
