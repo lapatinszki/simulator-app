@@ -70,42 +70,27 @@ def login_player(nickname, email_code, repo_name, players_file="table_Players.cs
 # -------------------------------------------------------------------------------------------
 def update_player_attempt(nickname, email_code, profit, repo_name, players_file="table_Players.csv"):
     players, sha = load_csv_from_github(repo_name, players_file)
-    player_index = players.index[players["Nickname"] == nickname].tolist()
 
+    player_index = players.index[players["Nickname"] == nickname].tolist()
+    if not player_index:
+        raise ValueError(f"Player with nickname '{nickname}' not found in table. Did you login first?")
     idx = player_index[0]
 
     if "E-mail_code" in players.columns:
         players.loc[idx, "E-mail_code"] = email_code
 
     attempt_cols = [col for col in players.columns if col.startswith("Attempt_")]
+    updated = False
     for col in attempt_cols:
         if pd.isna(players.loc[idx, col]) or players.loc[idx, col] == "":
             players.loc[idx, col] = profit
+            updated = True
             break
+    if not updated:
+        raise ValueError(f"No empty Attempt columns left for player '{nickname}'.")
 
     save_csv_to_github(players, repo_name, players_file, sha, commit_message=f"Update {nickname} attempt")
     return players
-
-
-# -------------------------------------------------------------------------------------------
-# Leaderboard frissítése
-# -------------------------------------------------------------------------------------------
-def update_leaderboard(nickname, profit, repo_name, leaderboard_file="table_Leaderboard.csv"):
-    lb_df, sha = load_csv_from_github(repo_name, leaderboard_file)
-
-    if lb_df.empty:
-        lb_df = pd.DataFrame(columns=["Nickname", "Profit"])
-
-    if nickname in lb_df["Nickname"].values:
-        current_profit = lb_df.loc[lb_df["Nickname"] == nickname, "Profit"].values[0]
-        if profit > current_profit:
-            lb_df.loc[lb_df["Nickname"] == nickname, "Profit"] = profit
-    else:
-        new_row = pd.DataFrame([{"Nickname": nickname, "Profit": profit}])
-        lb_df = pd.concat([lb_df, new_row], ignore_index=True)
-
-    lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
-    save_csv_to_github(lb_df, repo_name, leaderboard_file, sha, commit_message=f"Update leaderboard {nickname}")
 
 
 # -------------------------------------------------------------------------------------------
@@ -118,4 +103,5 @@ def get_rank_for_profit(profit, repo_name, leaderboard_file="table_Leaderboard.c
     lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
     rank = (lb_df["Profit"] > profit).sum() + 1
     return rank
+
 
