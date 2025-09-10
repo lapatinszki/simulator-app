@@ -204,54 +204,42 @@ else:
 
                 # --- Profit biztonságos kiolvasása ---
                 profit_value = float(selected_row.get("Profit", 0.0))
-                
-                # --- 1. Session_state értékek kiolvasása fő szálban ---
                 nickname = st.session_state.get("nickname")
                 email_hash = st.session_state.get("email_hash")
-                profit_value = st.session_state.get("profit_value")  # vagy ahol tárolod
-                repo_name = "lapatinszki/simulator-app"
-                github_token = st.secrets.get("GITHUB_TOKEN")
-                
-                if not all([nickname, email_hash, profit_value, github_token]):
-                    st.error("Hiányzik valamilyen szükséges adat: nickname, email_hash, profit_value vagy GitHub token.")
-                else:
-                    # --- 2. Háttérfüggvény ---
-                    def update_tables(nickname, email_hash, profit_value, repo_name, github_token):
-                        # Cloud GitHub update
-                        app_modify_GitTable.update_player_attempt(
-                            nickname=nickname,
-                            email_hash=email_hash,
-                            profit_value=profit_value,
-                            repo_name=repo_name,
-                            token=github_token
-                        )
-                        app_modify_GitTable.update_leaderboard(
-                            nickname=nickname,
-                            profit=profit_value,
-                            repo_name=repo_name,
-                            token=github_token
-                        )
-                
-                    # --- 3. Háttérszál indítása ---
-                    executor = ThreadPoolExecutor(max_workers=1)
-                    future = executor.submit(update_tables, nickname, email_hash, profit_value, repo_name, github_token)
-                
-                    # --- 4. GIF lejátszása ---
-                    start_time = time.time()
-                    app_display_results.play_the_GIF()
-                
-                    # Minimum gif_duration másodperc várakozás
-                    gif_duration = 5
-                    elapsed = time.time() - start_time
-                    if elapsed < gif_duration:
-                        time.sleep(gif_duration - elapsed)
-                
-                    # --- 5. Várjuk meg a háttérszál befejezését ---
-                    future.result()
-                
-                    # --- 6. Fő szálban frissítjük session_state-et, ha kell ---
-                    st.session_state["last_profit"] = profit_value
 
+                # --- 1. Háttérfüggvény: paraméterekkel dolgozik, NEM session_state-tel ---
+                def update_tables(nickname, email_hash, profit_value, github_token):
+                    if github_token is None:  # Lokális futtatás
+                        app_modify_tables.update_player_attempt(nickname, email_hash, profit_value)
+                        app_modify_tables.update_leaderboard(nickname, profit_value)
+                    else:  # Cloud futtatás
+                        app_modify_GitTable.update_player_attempt(nickname, email_hash, github_token, profit_value, "lapatinszki/simulator-app")
+                        app_modify_GitTable.update_leaderboard(nickname, profit_value, github_token "lapatinszki/simulator-app")
+
+
+                # --- 2. Háttérszál indítása ---
+                executor = ThreadPoolExecutor(max_workers=1)
+                future = executor.submit(update_tables, nickname, email_hash, profit_value, github_token)
+
+                # --- 3. GIF lejátszása ---
+                start_time = time.time()
+                app_display_results.play_the_GIF()
+
+                # minimum várakozás
+                gif_duration = 5
+                elapsed = time.time() - start_time
+                if elapsed < gif_duration:
+                    time.sleep(gif_duration - elapsed)
+
+                # --- 4. Várjuk meg a háttér futás végét ---
+                future.result()
+
+                # --- Attempt mentése Profit-tal együtt ---
+                selections_with_profit = selections.copy()
+                selections_with_profit["Profit"] = profit_value
+                st.session_state.attempts[i] = selections_with_profit
+
+                st.rerun()
 
 
 
@@ -317,6 +305,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
