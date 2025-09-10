@@ -126,7 +126,7 @@ elif st.session_state.show_summary:
     st.subheader("Final Result 🏆")
     st.markdown("<hr style='border:1px solid #eee; margin:10px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
-    app_final_result.calculate_results()
+    app_final_result.calculate_results(github_token)
 
 
 
@@ -285,3 +285,4 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
