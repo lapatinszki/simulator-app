@@ -72,7 +72,7 @@ def calculate_results(github_token):
             spread: 70,
             origin: {{ y: 0.6 }}
             }});
-            }}, 1900);
+            }}, 1800);
             </script>
             """
 
