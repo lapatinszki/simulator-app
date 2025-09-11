@@ -8,6 +8,7 @@ import streamlit as st
 # -------------------------------------------------------------------------------------------
 def load_csv_from_github(repo_name, file_path, token):
     #Betölti a CSV-t GitHub repo-ból DataFrame-be.
+    token = st.secrets["GITHUB_TOKEN"]
     g = Github(token)
     repo = g.get_repo(repo_name)
     try:
@@ -121,4 +122,5 @@ def get_rank_for_profit(profit, token, repo_name, leaderboard_file="table_Leader
     lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
     rank = (lb_df["Profit"] > profit).sum() + 1
     return rank
+
 
