@@ -29,7 +29,7 @@ if "confirm_finish" not in st.session_state:
 if 'scroll_to_top' not in st.session_state:
     st.session_state.scroll_to_top = False
 if st.session_state.scroll_to_top:
-    scroll_to_here(0.25, key='top')  # Scroll to the top of the page
+    scroll_to_here(0, key='top')  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
 def scroll():
     st.session_state.scroll_to_top = True
@@ -313,6 +313,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
