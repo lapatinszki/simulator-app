@@ -286,6 +286,7 @@ else:
                     if st.button("Next round! Let’s do this! 🔄", key=f"new_attempt_{i}"):
                         st.session_state.current_tab = i + 1
                         components.html("<script>window.scrollTo(0,0);</script>", height=0)
+                        scroll()
                         st.rerun()
 
                 # Csak akkor kell megerősítés, ha nem az utolsó attempt
