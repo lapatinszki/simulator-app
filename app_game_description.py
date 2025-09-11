@@ -15,7 +15,7 @@ def game_info():
 
     st.subheader("**Game Description** 📋")
     st.markdown(f"<hr style='border:1px solid {highlight_color}; margin:0px 0'>", unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(f"""
     <div style='text-align: justify;'>
     In this game, you run a mini-factory <b><span style='color:{highlight_color}'>producing gears (T100), assembling pins to base plates (T200), assembling gears onto base pallets (T800),</span></b> packaging, palletizing using two robots (Robot #01 and Robot #02), and shipping the finished products to your customer. The target is to deliver <b><span style='color:{highlight_color}'>1000 good quality products</span></b> at a fixed price of <b><span style='color:{highlight_color}'>€ 4.78 per product</span></b> within a <b><span style='color:{highlight_color}'>14 hours production window.</span></b> Your performance will be measured by <b><span style='color:{highlight_color}'>profit.</span></b>
     <div style='text-align: justify; margin-top:20px;'>
