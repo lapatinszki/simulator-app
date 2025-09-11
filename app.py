@@ -6,7 +6,7 @@ import sys, os
 import time
 
 from concurrent.futures import ThreadPoolExecutor
-import app_modify_tables, app_modify_GitTable, app_display_results, app_display_parameters, app_email, app_final_result, app_others
+import app_modify_tables, app_modify_GitTable, app_display_results, app_display_parameters, app_email, app_final_result, app_game_description
 
 
 
@@ -104,16 +104,8 @@ if not st.session_state.logged_in:
 
 # ------------------ JÁTÉK LEÍRÁS OLDAL -------------------
 elif st.session_state.show_game_intro:
-    app_others.scroll_to_top()
     st.image("header.png", use_container_width=True)
-    st.subheader("**Game description** 📋")
-    st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
-    st.markdown("""
-    Welcome to the ultimate game simulation!  
-    In this game, you will select parameters for your manufacturing setup,  
-    and see how your choices affect the profit, machine utilization, operator efficiency, and robot performance.  
-    Can you optimize your production process and maximize your results? Let's find out!
-    """)
+    app_game_description.game_info()
     if st.button("Let's play"):
         st.session_state.show_game_intro = False
         st.rerun()
@@ -131,7 +123,6 @@ elif st.session_state.show_summary:
 
 # ------------------ JÁTÉK FELÜLET ------------------
 else:
-    app_others.scroll_to_top()
     st.image("header.png", use_container_width=True)
     st.subheader(f"Let's play the game, {st.session_state.nickname}! 🎮")
     st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
@@ -187,8 +178,6 @@ else:
         attempt_idx = st.session_state.current_tab
         selections = app_display_parameters.display_inputs(attempt_idx)
 
-
-
         # ------------------------ Szimuláció FUTTATÁSA ------------------------
         # ------------------------ Szimuláció FUTTATÁSA ------------------------
         if st.button("Run the simulation!"):
@@ -241,8 +230,9 @@ else:
                 selections_with_profit["Profit"] = profit_value
                 st.session_state.attempts[i] = selections_with_profit
 
-                st.rerun()
 
+
+                st.rerun()
 
 
     # ------------------------ Eredmények megjelenítése ------------------------
@@ -307,7 +297,6 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
-
 
 
 
