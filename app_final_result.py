@@ -51,7 +51,7 @@ def calculate_results(github_token):
 
             <div class="container">
             <div class="slide-up delay-1" style='font-size:18px; margin-bottom:5px;'>
-            Your best profit: <span style="color:#F15922; font-weight:bold;">{max_profit:.2f} €</span>
+            Your highest profit: <span style="color:#F15922; font-weight:bold;">{max_profit:.2f} €</span>
             </div>
             <div class="slide-up delay-2" style='font-size:18px; margin-bottom:5px;'>
             Your rank in the current leaderboard:
@@ -60,7 +60,7 @@ def calculate_results(github_token):
             {rank_str}
             </div>
             <div class="slide-up delay-4" style='font-size:14px; margin-top:5px;'>
-            Congratulations! You completed the game successfully. 🎉
+            Congratulations! You completed the game successfully.🎉
             </div>
             </div>
 
@@ -72,7 +72,7 @@ def calculate_results(github_token):
             spread: 70,
             origin: {{ y: 0.6 }}
             }});
-            }}, 1500);
+            }}, 1900);
             </script>
             """
 
