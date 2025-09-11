@@ -4,7 +4,7 @@ def game_info():
 
     st.subheader("**Introduction** 🏭")
     st.markdown(f"<hr style='border:1px solid {highlight_color}; margin:0px 0'>", unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(f"""
     <div style='text-align: justify;'>
     Step into the role of a factory manager in this interactive mini-factory simulation. Your objective is to optimize production, quality, cost, and sustainability while delivering products on time. This hands-on game demonstrates the challenges of modern manufacturing management, where every decision has a direct impact on profitability, efficiency, and environmental performance.
     <div style='text-align: justify; margin-top:10px;'>
@@ -17,14 +17,14 @@ def game_info():
     st.markdown(f"<hr style='border:1px solid {highlight_color}; margin:0px 0'>", unsafe_allow_html=True)
     st.markdown(f"""
     <div style='text-align: justify;'>
-    In this game, you run a mini-factory <b><span style='color:{highlight_color}'>producing gears (T100), assembling pins to base plates (T200), assembling gears onto base pallets (T800),</span></b> packaging, palletizing using two robots (Robot #01 and Robot #02), and shipping the finished products to your customer. The target is to deliver <b><span style='color:{highlight_color}'>1000 good quality products</span></b> at a fixed price of <b><span style='color:{highlight_color}'>€ 4.78 per product</span></b> within a <b><span style='color:{highlight_color}'>14 hours production window.</span></b> Your performance will be measured by <b><span style='color:{highlight_color}'>profit.</span></b>
+    In this game, you run a mini-factory <b><span style='color:{highlight_color}'>producing gears (T100), assembling pins to base plates (T200), assembling gears onto base pallets (T800),</span></b> packaging, palletizing using two robots (Robot #01 and Robot #02), and shipping the finished products to your customer. The target is to deliver <b><span style='color:{highlight_color}'>1000 good quality products</span></b> at a fixed price of <b><span style='color:{highlight_color}'>€4.78 per product</span></b> within a <b><span style='color:{highlight_color}'>14 hours production window.</span></b> Your performance will be measured by <b><span style='color:{highlight_color}'>profit.</span></b>
     <div style='text-align: justify; margin-top:20px;'>
     </div>
     """, unsafe_allow_html=True)
 
     st.image("picture_Detailed_01.jpg", use_container_width=True)     
 
-    st.markdown("""
+    st.markdown(f"""
     <div style='text-align: justify;'>
     <div style='text-align: justify; margin-top:10px;'>
     <b><span style='color:{highlight_color}'>Revenue comes from the products sold, while expenses are calculated based on:</span></b>
@@ -48,7 +48,7 @@ def game_info():
 
     st.subheader("**Adjustable Parameters** ⚙️")
     st.markdown(f"<hr style='border:1px solid {highlight_color}; margin:0px 0'>", unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(f"""
     <div style='text-align: justify;'>
     You can adjust 7 key parameters to optimize your production strategy:
 
@@ -106,7 +106,7 @@ def game_info():
 
     st.subheader("**Additional Information** ℹ️")
     st.markdown(f"<hr style='border:1px solid {highlight_color}; margin:0px 0'>", unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(f"""
     <div style='text-align: justify;'>
     <ul>
     <li>Infinite storage for raw materials, boxes, and pallets – no deadlocks.</li>
@@ -117,7 +117,7 @@ def game_info():
 
     st.subheader("**Game Goal** 🎯")
     st.markdown(f"<hr style='border:1px solid {highlight_color}; margin:0px 0'>", unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(f"""
     <div style='text-align: justify;'>
     Your goal is to find the sweet spot between <b><span style='color:{highlight_color}'>speed, quality, cost, and sustainability to maximize your profit</span></b> while maintaining the production schedule.
     <div style='text-align: justify; margin-top:20px;'>
@@ -126,7 +126,7 @@ def game_info():
 
     st.subheader("**Ready to Play?** 🕹️")
     st.markdown(f"<hr style='border:1px solid {highlight_color}; margin:0px 0'>", unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(f"""
     <div style='text-align: justify;'>
     Adjust the parameters and monitor production to maximize your profit. You have <b><span style='color:{highlight_color}'>5 attempts</span></b> to earn the highest profit. Don’t forget to click the <b><span style='color:{highlight_color}'>“Finish the Game” button</span></b> when you’re done to see your <b><span style='color:{highlight_color}'>rank on the current leaderboard!</span></b>
     <div style='text-align: justify; margin-top:20px;'>
