@@ -47,7 +47,7 @@ def game_info():
     """, unsafe_allow_html=True)
 
     
-    st.image("picture_Layout.jpg", use_container_width=True)
+    st.image("picture_Layout_with_Texts.jpg", use_container_width=True)
 
     st.subheader("**Adjustable Parameters** ⚙️")
     st.markdown(f"<hr style='border:1px solid {highlight_color}; margin:0px 0'>", unsafe_allow_html=True)
