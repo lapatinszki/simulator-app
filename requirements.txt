@@ -3,3 +3,5 @@ pandas
 openpyxl
 plotly
 PyGithub
+streamlit_scroll_to_top
+
