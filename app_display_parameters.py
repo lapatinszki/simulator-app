@@ -97,9 +97,10 @@ def display_inputs(attempt_idx):
                 selected_label = st.radio(st_label, options, index=index)
                 selections[col_name] = param_options[col_name][selected_label]
 
-            st.markdown("<hr style='border:1px solid rgba(241, 89, 34, 0.2); margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
+            st.markdown("<hr style='border:1px solid rgba(241, 89, 34, 0.3); margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
     return selections
+
 
 
 
