@@ -6,6 +6,7 @@ import sys, os
 import time
 
 from concurrent.futures import ThreadPoolExecutor
+from streamlit_scroll_to_top import scroll_to_here
 import app_modify_tables, app_modify_GitTable, app_display_results, app_display_parameters, app_email, app_final_result, app_game_description
 
 
@@ -23,6 +24,20 @@ if "show_summary" not in st.session_state:
     st.session_state.show_summary = False
 if "confirm_finish" not in st.session_state:
     st.session_state.confirm_finish = False
+
+
+if 'scroll_to_top' not in st.session_state:
+    st.session_state.scroll_to_top = False
+if st.session_state.scroll_to_top:
+    scroll_to_here(0, key='top')  # Scroll to the top of the page
+    st.session_state.scroll_to_top = False  # Reset the state after scrolling
+def scroll():
+    st.session_state.scroll_to_top = True
+
+
+
+
+
 
 #Local vagy Cloud:
 try: github_token = st.secrets["GITHUB_TOKEN"]
@@ -62,7 +77,7 @@ if not st.session_state.logged_in:
     </script>
     """, unsafe_allow_html=True)
 
-    if st.button("Login"):
+    if st.button("Login", on_click=scroll):
         if email and nickname and agree:
             # Attempt login
 
@@ -106,12 +121,10 @@ if not st.session_state.logged_in:
 elif st.session_state.show_game_intro:
     st.image("header.png", use_container_width=True)
     app_game_description.game_info()
-    if st.button("Let's play"):
+    if st.button("Let's play", on_click=scroll):
         st.session_state.show_game_intro = False
         st.rerun()
 
-
-    
 
 
 # ------------------ VÉGEREDMÉNY FELÜLET ------------------
@@ -222,6 +235,7 @@ else:
                     time.sleep(gif_duration - elapsed)
 
                 # --- 4. Várjuk meg a háttér futás végét ---
+                #scroll()
                 future.result()
 
 
