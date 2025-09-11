@@ -9,13 +9,13 @@ parameters = {
     "Outgo":                          {"label": "Expense",                  "unit": "[€]",          "group": "Finances 💸"},
     "Profit":                         {"label": "Profit",                   "unit": "[€]",          "group": "Finances 💸"},
 
-    "Size of the batches":            {"label": "Size of the batches",                  "unit": "[pcs]",        "group": "Input parameters ➡️", "codes": {1: 8, 2: 24, 3: 40}},
-    "Type of the shipping box":       {"label": "Size of the shipping box",             "unit": "",             "group": "Input parameters ➡️", "codes": {1: "Small", 2: "Medium", 3: "Large"}},
-    "Cycle time factor":              {"label": "Machines - cycle time factor",         "unit": "[%]",          "group": "Input parameters ➡️", "codes": {-0.2: -20.00, -0.1: -10.00, 0: 0.00, 0.1: 10.00, 0.2: 20.00}},
-    "Number of the operators":        {"label": "Number of the operators",              "unit": "[operator]",   "group": "Input parameters ➡️"},
-    "Type of the quality check":      {"label": "Type of the quality check",            "unit": "",             "group": "Input parameters ➡️", "codes": {1: "End of the line", 2: "All machine"}},
-    "Percentage of the quality check":{"label": "Percentage of the quality check",      "unit": "[%]",          "group": "Input parameters ➡️", "codes": {0: 0.00, 0.2: 20.00, 0.4: 40.00, 0.6: 60.00, 0.8: 80.00, 1: 100.00}},
-    "Overshooting":                   {"label": "Percentage of the overshooting",       "unit": "[%]",          "group": "Input parameters ➡️", "codes": {0: 0.00, 0.1: 10.00, 0.2: 20.00, 0.3: 30.00}},
+    "Size of the batches":            {"label": "Size of the batches",                  "unit": "[pcs]",        "group": "Input parameters ⚙️", "codes": {1: 8, 2: 24, 3: 40}},
+    "Type of the shipping box":       {"label": "Size of the shipping box",             "unit": "",             "group": "Input parameters ⚙️", "codes": {1: "Small", 2: "Medium", 3: "Large"}},
+    "Cycle time factor":              {"label": "Machines - cycle time factor",         "unit": "[%]",          "group": "Input parameters ⚙️", "codes": {-0.2: -20.00, -0.1: -10.00, 0: 0.00, 0.1: 10.00, 0.2: 20.00}},
+    "Number of the operators":        {"label": "Number of the operators",              "unit": "[operator]",   "group": "Input parameters ⚙️"},
+    "Type of the quality check":      {"label": "Type of the quality check",            "unit": "",             "group": "Input parameters ⚙️", "codes": {1: "End of the line", 2: "All machine"}},
+    "Percentage of the quality check":{"label": "Percentage of the quality check",      "unit": "[%]",          "group": "Input parameters ⚙️", "codes": {0: 0.00, 0.2: 20.00, 0.4: 40.00, 0.6: 60.00, 0.8: 80.00, 1: 100.00}},
+    "Overshooting":                   {"label": "Percentage of the overshooting",       "unit": "[%]",          "group": "Input parameters ⚙️", "codes": {0: 0.00, 0.1: 10.00, 0.2: 20.00, 0.3: 30.00}},
     
     "Elapsed time":                         {"label": "Elapsed time",               "unit": "",             "group": "Shipping details 🚚"},
     "Outcome - All":                        {"label": "Outcome (All)",              "unit": "[pcs]",        "group": "Shipping details 🚚"},
@@ -174,4 +174,3 @@ def display_charts(selected_row, df):
         # Robotok
         robot_prefixes = ["Robot 01 -", "Robot 02 -"]
         create_bar_chart(selected_row, robot_prefixes, "Robot(s)")
-
