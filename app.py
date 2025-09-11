@@ -77,7 +77,7 @@ if not st.session_state.logged_in:
     </script>
     """, unsafe_allow_html=True)
 
-    if st.button("Login", on_click=scroll):
+    if st.button("Login"):
         if email and nickname and agree:
             # Attempt login
 
@@ -119,6 +119,7 @@ if not st.session_state.logged_in:
 
 # ------------------ JÁTÉK LEÍRÁS OLDAL -------------------
 elif st.session_state.show_game_intro:
+    scroll()
     st.image("header.png", use_container_width=True)
     app_game_description.game_info()
     if st.button("Let's play", on_click=scroll):
@@ -311,6 +312,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
