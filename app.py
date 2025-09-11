@@ -106,6 +106,7 @@ if not st.session_state.logged_in:
                 email = "" #RESET AZONNAL!
 
                 st.session_state.show_game_intro = True
+                scroll()
                 st.rerun()
         else:
             if email == "" or nickname == "":
@@ -119,15 +120,14 @@ if not st.session_state.logged_in:
 
 # ------------------ JÁTÉK LEÍRÁS OLDAL -------------------
 elif st.session_state.show_game_intro:
-    scroll()
     st.image("header.png", use_container_width=True)
     app_game_description.game_info()
-    if st.button("Let's play", on_click=scroll):
+    if st.button("Let's play"):
         st.session_state.show_game_intro = False
+        scroll()
         st.rerun()
 
-
-
+    
 # ------------------ VÉGEREDMÉNY FELÜLET ------------------
 elif st.session_state.show_summary:
     app_final_result.calculate_results(github_token)
@@ -312,7 +312,6 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
-
 
 
 
