@@ -281,6 +281,7 @@ else:
                 selections_with_profit["Profit"] = profit_value
                 st.session_state.attempts[i] = selections_with_profit
 
+                scroll()
                 st.rerun()
 
 
@@ -348,6 +349,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
