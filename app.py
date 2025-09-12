@@ -29,8 +29,9 @@ if "confirm_finish" not in st.session_state:
 if 'scroll_to_top' not in st.session_state:
     st.session_state.scroll_to_top = False
 if st.session_state.scroll_to_top:
-    scroll_to_here(0, key='top')  # Scroll to the top of the page
+    scroll_to_here(0, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
+
 def scroll():
     st.session_state.scroll_to_top = True
 
@@ -78,10 +79,19 @@ if not st.session_state.logged_in:
     """, unsafe_allow_html=True)
 
     if st.button("Login"):
-        if email and nickname and agree:
-            # Attempt login
 
+        #Checkolja e-mailt!
+        email_valid = False
+        if email != "":
+            email_valid = app_email.is_valid_email(email)
+
+
+        # Attempt login
+        if email_valid and nickname and agree:
+            
+            #Változók mentése:
             st.session_state.email_hash = hashlib.sha256(email.encode()).hexdigest()
+            st.session_state.email = email
             st.session_state.nickname = nickname
 
             if github_token == None: #Lokális futtatás
@@ -102,15 +112,19 @@ if not st.session_state.logged_in:
                 if github_token == None: #Lokális futtatás
                     print("Not sending e-mail in local run.")
                 else:
-                    app_email.send_email(email, st.session_state.email_hash, nickname)    
-                email = "" #RESET AZONNAL!
+                    app_email.send_email(email, st.session_state.email_hash, nickname)
 
                 st.session_state.show_game_intro = True
                 scroll()
                 st.rerun()
         else:
-            if email == "" or nickname == "":
-                st.warning("Please enter both e-mail and nickname!")
+            if email == "":
+                st.warning("Please enter your e-mail!")
+            else:
+                if email_valid == False:
+                    st.warning("Please enter a valid e-mail!")
+            if nickname == "":               
+                st.warning("Please enter your nickname!")              
             if not agree:
                 st.warning("You must agree to the terms and conditions to proceed.")
 
@@ -126,7 +140,6 @@ elif st.session_state.show_game_intro:
         st.session_state.show_game_intro = False
         scroll()
         st.rerun()
-
     
 # ------------------ VÉGEREDMÉNY FELÜLET ------------------
 elif st.session_state.show_summary:
@@ -140,6 +153,14 @@ else:
     st.image("header.png", use_container_width=True)
     st.subheader(f"Let's play the game, {st.session_state.nickname}! 🎮")
     st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
+
+    if st.button("Back to description"):
+        st.session_state.show_game_intro = True
+        scroll()
+        st.rerun()
+    
+    st.markdown("<hr style='border:1px solid rgba(241, 89, 34, 0.3); margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
+
 
     @st.cache_data
     def load_data():
@@ -286,7 +307,6 @@ else:
                     if st.button("Next round! Let’s do this! 🔄", key=f"new_attempt_{i}"):
                         st.session_state.current_tab = i + 1
                         components.html("<script>window.scrollTo(0,0);</script>", height=0)
-                        scroll()
                         st.rerun()
 
                 # Csak akkor kell megerősítés, ha nem az utolsó attempt
@@ -313,8 +333,6 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
-
-
 
 
 
