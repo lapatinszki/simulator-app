@@ -11,6 +11,7 @@ import app_modify_tables, app_modify_GitTable, app_display_results, app_display_
 
 
 
+
 # --- SESSION STATE INIT ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -26,6 +27,7 @@ if "confirm_finish" not in st.session_state:
     st.session_state.confirm_finish = False
 
 
+
 # Inicializálás, ha még nem létezik
 if "back_to_info_values" not in st.session_state:
     st.session_state.back_to_info_values = {}
@@ -36,12 +38,11 @@ if "selections" not in st.session_state:
 if 'scroll_to_top' not in st.session_state:
     st.session_state.scroll_to_top = False
 if st.session_state.scroll_to_top:
-    scroll_to_here(0.2, key="top")  # Scroll to the top of the page
+    scroll_to_here(1, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
 
 def scroll():
     st.session_state.scroll_to_top = True
-
 
 
 
@@ -144,9 +145,9 @@ if not st.session_state.logged_in:
 elif st.session_state.show_game_intro:
     st.image("header.png", use_container_width=True)
     app_game_description.game_info()
-    if st.button("Let's play"):
-        scroll()
+    if st.button("Let's play"):               
         st.session_state.show_game_intro = False
+        scroll()
         st.rerun()
     
 
@@ -223,6 +224,7 @@ else:
         st.subheader("Select input parameters")
         attempt_idx = st.session_state.current_tab
         selections = app_display_parameters.display_inputs(attempt_idx)
+        st.session_state.back_to_info_values = st.session_state.selections.copy()  # selections = aktuális paraméterek
 
         # ------------------------ Szimuláció FUTTATÁSA ------------------------
         # ------------------------ Szimuláció FUTTATÁSA ------------------------
