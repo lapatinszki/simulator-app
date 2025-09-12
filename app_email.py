@@ -37,7 +37,7 @@ def send_results(receiver_email, nickname, profit):
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = receiver_email
-    msg['Subject'] = "Factory Manager Challenge – Your results are in!"
+    msg['Subject'] = "🏆 Factory Manager Challenge – Your results are in!"
 
     body = "Teszt"
     msg.attach(MIMEText(body, 'plain'))
