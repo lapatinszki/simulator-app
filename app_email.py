@@ -29,7 +29,7 @@ def send_email(email, email_hash, nickname):
 
 
 #Eredmény elküldése felhasználó e-mailre:
-def send_results(receiver_email, nickname):
+def send_results(receiver_email, nickname, profit):
     sender_email = os.environ["GMAIL_EMAIL"]
     app_password = os.environ["GMAIL_APP_PASSWORD"]
 
@@ -37,8 +37,32 @@ def send_results(receiver_email, nickname):
     msg['From'] = sender_email
     msg['To'] = receiver_email
 
-    msg['Subject'] = f"Új belépés: {nickname}"
-    body = ""
+    msg['Subject'] = "🏆 Factory Manager Challenge – Your results are in!"
+    # HTML body
+    body = """
+    <html>
+    <body>
+        Dear <b>{Nickname}</b>,<br><br>
+
+        Congratulations, you’ve completed the Mini Factory Challenge! 🏭<br>
+        Your best result: <b>€{profit}</b> out of the maximum possible <b>€619.78</b>.<br>
+        Not bad! 😎<br>
+        But think about it: in real life, every decision has an even bigger impact on costs, quality, sustainability, and profit. This game was just a glimpse into how many parameters, trade-offs, and choices shape modern production processes.<br><br>
+
+        <b>Relax, it’s just a game. Or… is it?</b> 👀<br><br>
+
+        Because in real manufacturing, the same trade-offs decide whether you’re making money, wasting energy, or just stockpiling reject parts.<br>
+        That’s where we come in: helping you find the sweet spot before the “Game Over” screen shows up in real life.<br><br>
+
+        <b>Use simulation to untap the hidden potential of your manufacturing today – and profit tomorrow!</b><br><br>
+
+        👉 Learn more: <a href="https://www.idm-systems.hu">www.idm-systems.hu</a><br><br>
+
+        Best regards,<br>
+        The IDM - Team
+    </body>
+    </html>
+    """
 
 
     msg.attach(MIMEText(body, 'plain'))
