@@ -80,7 +80,7 @@ def calculate_results(github_token, nickname, email):
 
 
     #Email küldése eredményekről + infos cucc:
-    if github_token != None: #Felhő futtatás
-        app_email.send_results(nickname, email, max_profit)
+    #if github_token != None: #Felhő futtatás
+    app_email.send_results(email, nickname, max_profit)
 
     
