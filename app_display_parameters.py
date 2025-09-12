@@ -35,11 +35,7 @@ default_values = {
     "Overshooting": 0.0                         # első érték
 }
 
-# Inicializálás, ha még nem létezik
-if "back_to_info_values" not in st.session_state:
-    st.session_state.back_to_info_values = {}
-if "selections" not in st.session_state:
-    st.session_state.selections = {}
+
 
 
 def display_inputs(attempt_idx):
