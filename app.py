@@ -164,7 +164,6 @@ else:
     st.image("header.png", use_container_width=True)
     st.subheader(f"Let's play the game, {st.session_state.nickname}! 🎮")
     st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
-
     if st.button("Back to description"):
         st.session_state.back_to_info_values = st.session_state.selections.copy()  # selections = aktuális paraméterek
         st.session_state.show_game_intro = True
@@ -224,7 +223,7 @@ else:
         st.subheader("Select input parameters")
         attempt_idx = st.session_state.current_tab
         selections = app_display_parameters.display_inputs(attempt_idx)
-        st.session_state.back_to_info_values = st.session_state.selections.copy()  # selections = aktuális paraméterek
+        #st.session_state.back_to_info_values = st.session_state.selections.copy()  # selections = aktuális paraméterek
 
         # ------------------------ Szimuláció FUTTATÁSA ------------------------
         # ------------------------ Szimuláció FUTTATÁSA ------------------------
@@ -285,6 +284,7 @@ else:
     # ------------------------ Eredmények megjelenítése ------------------------
     else:
         selections = st.session_state.attempts[i]
+        st.session_state.back_to_info_values = st.session_state.selections.copy()  # selections = aktuális paraméterek
 
         # Mask létrehozása a kiválasztott paraméterekhez
         mask = pd.Series([True]*len(df))
