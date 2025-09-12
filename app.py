@@ -33,17 +33,19 @@ if "back_to_info_values" not in st.session_state:
     st.session_state.back_to_info_values = {}
 if "selections" not in st.session_state:
     st.session_state.selections = {}
-
-
 if 'scroll_to_top' not in st.session_state:
     st.session_state.scroll_to_top = False
+if 'scroll_to_header' not in st.session_state:
+    st.session_state.scroll_to_header = False
+
+
 if st.session_state.scroll_to_top:
-    scroll_to_here(1, key="top")  # Scroll to the top of the page
+    scroll_to_here(0, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
+    st.rerun()    
 
 def scroll():
     st.session_state.scroll_to_top = True
-
 
 
 
@@ -164,6 +166,7 @@ else:
     st.image("header.png", use_container_width=True)
     st.subheader(f"Let's play the game, {st.session_state.nickname}! 🎮")
     st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
+
     if st.button("Back to description"):
         st.session_state.back_to_info_values = st.session_state.selections.copy()  # selections = aktuális paraméterek
         st.session_state.show_game_intro = True
@@ -269,7 +272,6 @@ else:
                     time.sleep(gif_duration - elapsed)
 
                 # --- 4. Várjuk meg a háttér futás végét ---
-                #scroll()
                 future.result()
 
 
