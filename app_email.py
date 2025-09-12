@@ -32,17 +32,18 @@ def send_email(email, email_hash, nickname):
 def send_results(receiver_email, nickname, profit):
     sender_email = os.environ["GMAIL_EMAIL"]
     app_password = os.environ["GMAIL_APP_PASSWORD"]
+    receiver_email = st.session_state.email  # vagy bármilyen helyes cím
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = receiver_email
-
     msg['Subject'] = "🏆 Factory Manager Challenge – Your results are in!"
+
     # HTML body
-    body = """
+    body = f"""
     <html>
     <body>
-        Dear <b>{Nickname}</b>,<br><br>
+        Dear <b>{nickname}</b>,<br><br>
 
         Congratulations, you’ve completed the Mini Factory Challenge! 🏭<br>
         Your best result: <b>€{profit}</b> out of the maximum possible <b>€619.78</b>.<br>
@@ -64,12 +65,12 @@ def send_results(receiver_email, nickname, profit):
     </html>
     """
 
+    msg.attach(MIMEText(body, 'html'))  # HTML MIME típus
 
-    msg.attach(MIMEText(body, 'plain'))
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(sender_email, app_password)
-    server.sendmail(sender_email, receiver_email, msg.as_string())
+    server.sendmail(sender_email, [receiver_email], msg.as_string())  # címzett listában
     server.quit()
 
 
