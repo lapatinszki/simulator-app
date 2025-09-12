@@ -1,8 +1,8 @@
-import app_modify_GitTable, app_modify_tables
+import app_modify_GitTable, app_modify_tables, app_email
 import streamlit.components.v1 as components
 import streamlit as st
 
-def calculate_results(github_token):
+def calculate_results(github_token, nickname, email):
     # Maximum profit a játékos összes attempt-jából
     attempts = [a for a in st.session_state.attempts if a is not None]
     if attempts:
@@ -72,8 +72,15 @@ def calculate_results(github_token):
             spread: 70,
             origin: {{ y: 0.6 }}
             }});
-            }}, 2000);
+            }}, 1900);
             </script>
             """
 
         components.html(html_content, height=350)
+
+
+    #Email küldése eredményekről + infos cucc:
+    if github_token != None: #Felhő futtatás
+        app_email.send_results(nickname, email, max_profit)
+
+    
