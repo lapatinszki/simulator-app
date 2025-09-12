@@ -1,9 +1,12 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.header import Header
+from email.utils import formataddr
 import re
 import dns.resolver
 import os
+
 
 # Küldés saját Gmailre - bejelentkezés logolása:
 def send_email(email, email_hash, nickname):
@@ -32,14 +35,13 @@ def send_email(email, email_hash, nickname):
 def send_results(receiver_email, nickname, profit):
     sender_email = os.environ["GMAIL_EMAIL"]
     app_password = os.environ["GMAIL_APP_PASSWORD"]
+    receiver_email = st.session_state.email  # vagy egy valid email
 
     msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = receiver_email
-    from email.header import Header
+    msg['From'] = formataddr((str(Header("IDM - Team", 'utf-8')), sender_email))
+    msg['To'] = formataddr((str(Header(nickname, 'utf-8')), receiver_email))
     msg['Subject'] = Header("🏆 Factory Manager Challenge – Your results are in!", 'utf-8')
 
-    # HTML body
     body = f"""
     <html>
     <body>
@@ -70,7 +72,7 @@ def send_results(receiver_email, nickname, profit):
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(sender_email, app_password)
-    server.sendmail(sender_email, [receiver_email], msg.as_string())  # címzett listában
+    server.sendmail(sender_email, [receiver_email], msg.as_string())
     server.quit()
 
 
