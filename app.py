@@ -26,6 +26,13 @@ if "confirm_finish" not in st.session_state:
     st.session_state.confirm_finish = False
 
 
+# Inicializálás, ha még nem létezik
+if "back_to_info_values" not in st.session_state:
+    st.session_state.back_to_info_values = {}
+if "selections" not in st.session_state:
+    st.session_state.selections = {}
+
+
 if 'scroll_to_top' not in st.session_state:
     st.session_state.scroll_to_top = False
 if st.session_state.scroll_to_top:
@@ -158,7 +165,7 @@ else:
     st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
     if st.button("Back to description"):
-        st.session_state.back_to_info_values = app_display_parameters.st.session_state.selections.copy()  # selections = aktuális paraméterek
+        st.session_state.back_to_info_values = st.session_state.selections.copy()  # selections = aktuális paraméterek
         st.session_state.show_game_intro = True
         scroll()
         st.rerun()
