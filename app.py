@@ -36,7 +36,7 @@ if "selections" not in st.session_state:
 if 'scroll_to_top' not in st.session_state:
     st.session_state.scroll_to_top = False
 if st.session_state.scroll_to_top:
-    scroll_to_here(0, key="top")  # Scroll to the top of the page
+    scroll_to_here(0.2, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
 
 def scroll():
@@ -145,8 +145,8 @@ elif st.session_state.show_game_intro:
     st.image("header.png", use_container_width=True)
     app_game_description.game_info()
     if st.button("Let's play"):
+        scroll()
         st.session_state.show_game_intro = False
-        #scroll()
         st.rerun()
     
 
@@ -314,9 +314,10 @@ else:
                 # New attempt gomb
                 if i < total_attempts - 1 and st.session_state.attempts[i+1] is None:
                     if st.button("Next round! Let’s do this! 🔄", key=f"new_attempt_{i}"):
-                        st.session_state.current_tab = i + 1
-                        components.html("<script>window.scrollTo(0,0);</script>", height=0)
+                        scroll()
+                        st.session_state.current_tab = i + 1  
                         st.rerun()
+                        
 
                 # Csak akkor kell megerősítés, ha nem az utolsó attempt
                 is_last_attempt = (i == total_attempts - 1)
