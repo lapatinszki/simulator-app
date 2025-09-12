@@ -32,7 +32,6 @@ def send_email(email, email_hash, nickname):
 def send_results(receiver_email, nickname, profit):
     sender_email = os.environ["GMAIL_EMAIL"]
     app_password = os.environ["GMAIL_APP_PASSWORD"]
-    receiver_email = st.session_state.email  # vagy bármilyen helyes cím
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
@@ -70,7 +69,7 @@ def send_results(receiver_email, nickname, profit):
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(sender_email, app_password)
-    server.sendmail(sender_email, [receiver_email], msg.as_string())  # címzett listában
+    server.sendmail(sender_email, receiver_email, msg.as_string())  # címzett listában
     server.quit()
 
 
