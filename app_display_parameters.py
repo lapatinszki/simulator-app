@@ -1,5 +1,7 @@
 import streamlit as st
 
+
+
 # ---------------- Paraméterek  ----------------
 param_cols = {
     "Size of the batches": "Bactch size",
@@ -33,11 +35,17 @@ default_values = {
     "Overshooting": 0.0                         # első érték
 }
 
+# Inicializálás, ha még nem létezik
+if "back_to_info_values" not in st.session_state:
+    st.session_state.back_to_info_values = {}
+if "selections" not in st.session_state:
+    st.session_state.selections = {}
+
 
 def display_inputs(attempt_idx):
     n_cols = 3
     cols = st.columns(n_cols)
-    selections = {}
+    st.session_state.selections = {}
 
     # Jelenlegi attempt index ellenőrzése
     if not isinstance(attempt_idx, int):
@@ -49,13 +57,14 @@ def display_inputs(attempt_idx):
     for i, (col_name, label) in enumerate(param_list):
         # Transzponált elhelyezés: előzőleg sorban volt, most oszlopban
         col_idx = i // n_rows  # melyik oszlop
-        row_idx = i % n_rows   # sor index (widget szempontból nem kell)
         col = cols[col_idx]
 
         st_label = f"{label}:"
 
         # Előző attempt értéke
-        if attempt_idx > 0 and st.session_state.attempts[attempt_idx - 1] is not None:
+        if st.session_state.back_to_info_values.get(col_name) is not None:
+            prev_val = st.session_state.back_to_info_values[col_name]
+        elif attempt_idx > 0 and st.session_state.attempts[attempt_idx - 1] is not None:
             prev_val = st.session_state.attempts[attempt_idx - 1][col_name]
         else:
             prev_val = default_values.get(col_name, None) if default_values else None
@@ -82,7 +91,7 @@ def display_inputs(attempt_idx):
                     value=key_for_slider,
                     format="%g"
                 )
-                selections[col_name] = options_dict[selected_label]
+                st.session_state.selections[col_name] = options_dict[selected_label]
 
             else:
                 options = list(param_options[col_name].keys())
@@ -95,9 +104,9 @@ def display_inputs(attempt_idx):
                     index = 0
 
                 selected_label = st.radio(st_label, options, index=index)
-                selections[col_name] = param_options[col_name][selected_label]
+                st.session_state.selections[col_name] = param_options[col_name][selected_label]
 
             st.markdown("<hr style='border:1px solid rgba(241, 89, 34, 0.3); margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
-    return selections
+    return st.session_state.selections
 
