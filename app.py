@@ -155,6 +155,7 @@ else:
     st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
     if st.button("Back to description"):
+        st.session_state.back_to_info_values = app_display_parameters.st.session_state.selections.copy()  # selections = aktuális paraméterek
         st.session_state.show_game_intro = True
         scroll()
         st.rerun()
@@ -194,7 +195,7 @@ else:
 
                 profit = selected_row.get("Profit", None)  # vagy selected_row["Profit"]
                 profit_float = float(profit)
-                profit_str = f"{profit_float:10.3f}"
+                profit_str = f"{profit_float:10.2f}"
 
 
                 tab_labels.append(f"Attempt {idx+1}     - **Profit: {profit_str} €**")
