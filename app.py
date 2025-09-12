@@ -38,16 +38,7 @@ if 'scroll_to_top' not in st.session_state:
 if 'scroll_to_top_Delay' not in st.session_state:
     st.session_state.scroll_to_top_Delay = False
 
-
-if st.session_state.scroll_to_top:
-    scroll_to_here(0, key="top")  # Scroll to the top of the page
-    st.session_state.scroll_to_top = False  # Reset the state after scrolling
-
-if st.session_state.scroll_to_top_Delay:
-    scroll_to_here(0, key="top")  # Scroll to the top of the page
-    st.session_state.scroll_to_top_Delay = False  # Reset the state after scrolling
-    time.sleep(0.7)
-    st.rerun()    
+   
 
 def scroll():
     st.session_state.scroll_to_top = True
@@ -63,8 +54,22 @@ try: github_token = st.secrets["GITHUB_TOKEN"]
 except: github_token = None
 
 
+# ------------------ GÖRGETÉS: KEZELÉS ------------------
+if st.session_state.scroll_to_top:
+    scroll_to_here(0, key="top")  # Scroll to the top of the page
+    st.session_state.scroll_to_top = False  # Reset the state after scrolling
+    st.rerun() 
+
+elif st.session_state.scroll_to_top_Delay:
+    scroll_to_here(0, key="top")  # Scroll to the top of the page
+    st.session_state.scroll_to_top_Delay = False  # Reset the state after scrolling
+    time.sleep(0.2)
+    st.rerun() 
+
+
+
 # ------------------ LOGIN KEZELÉS ------------------
-if not st.session_state.logged_in:
+elif not st.session_state.logged_in:
     st.image("header.png", use_container_width=True)
     st.subheader("Welcome to the Game! 🎮")
     
@@ -356,7 +361,6 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
-
 
 
 
