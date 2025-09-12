@@ -1,5 +1,7 @@
 import streamlit as st
 
+
+
 # ---------------- Paraméterek  ----------------
 param_cols = {
     "Size of the batches": "Bactch size",
@@ -34,44 +36,46 @@ default_values = {
 }
 
 
+
+
 def display_inputs(attempt_idx):
     n_cols = 3
     cols = st.columns(n_cols)
+    st.session_state.selections = {}
 
-    # Ha még nincs selections a session_state-ben, hozzuk létre egyszer
-    if "selections" not in st.session_state:
-        st.session_state.selections = {}
+    # Jelenlegi attempt index ellenőrzése
+    if not isinstance(attempt_idx, int):
+        attempt_idx = 0
 
     param_list = list(param_cols.items())
     n_rows = (len(param_list) + n_cols - 1) // n_cols  # hány sor kell
 
     for i, (col_name, label) in enumerate(param_list):
-        # Transzponált elhelyezés
-        col_idx = i // n_rows
+        # Transzponált elhelyezés: előzőleg sorban volt, most oszlopban
+        col_idx = i // n_rows  # melyik oszlop
         col = cols[col_idx]
 
         st_label = f"{label}:"
 
-        # Előző érték megkeresése
-        if st.session_state.get("back_to_info_values", {}).get(col_name) is not None:
+        # Előző attempt értéke
+        if st.session_state.back_to_info_values.get(col_name) is not None:
             prev_val = st.session_state.back_to_info_values[col_name]
-        elif attempt_idx > 0 and st.session_state.get("attempts", [None])[attempt_idx - 1] is not None:
+        elif attempt_idx > 0 and st.session_state.attempts[attempt_idx - 1] is not None:
             prev_val = st.session_state.attempts[attempt_idx - 1][col_name]
         else:
             prev_val = default_values.get(col_name, None) if default_values else None
 
         with col:
-            widget_key = f"{col_name}_{attempt_idx}"  # egyedi key minden widgethez
-
             if col_name in ["Cycle time factor", "Percentage of the quality check", "Overshooting"]:
                 options_dict = param_options[col_name]
-                keys = sorted(options_dict.keys())
+                keys = sorted(options_dict.keys())  # pl. 10, 20, 30
                 min_val = keys[0]
                 max_val = keys[-1]
                 step_val = keys[1] - keys[0] if len(keys) > 1 else 1
 
+                # Ha van előző érték, keressük meg a kulcsot
                 if prev_val is not None:
-                    key_for_slider = next((k for k, v in options_dict.items() if v == prev_val), min_val)
+                    key_for_slider = next((k for k,v in options_dict.items() if v == prev_val), min_val)
                 else:
                     key_for_slider = min_val
 
@@ -81,8 +85,7 @@ def display_inputs(attempt_idx):
                     max_value=max_val,
                     step=step_val,
                     value=key_for_slider,
-                    format="%g",
-                    key=widget_key
+                    format="%g"
                 )
                 st.session_state.selections[col_name] = options_dict[selected_label]
 
@@ -90,20 +93,16 @@ def display_inputs(attempt_idx):
                 options = list(param_options[col_name].keys())
                 if prev_val is not None:
                     try:
-                        index = options.index(next(k for k, v in param_options[col_name].items() if v == prev_val))
+                        index = options.index(next(k for k,v in param_options[col_name].items() if v == prev_val))
                     except StopIteration:
                         index = 0
                 else:
                     index = 0
 
-                selected_label = st.radio(
-                    st_label,
-                    options,
-                    index=index,
-                    key=widget_key
-                )
+                selected_label = st.radio(st_label, options, index=index)
                 st.session_state.selections[col_name] = param_options[col_name][selected_label]
 
-            st.markdown("<hr style='border:1px solid rgba(241, 89, 34, 0.3); margin:0px 0'>", unsafe_allow_html=True)
+            st.markdown("<hr style='border:1px solid rgba(241, 89, 34, 0.3); margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
     return st.session_state.selections
+
