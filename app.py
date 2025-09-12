@@ -138,7 +138,7 @@ elif st.session_state.show_game_intro:
     app_game_description.game_info()
     if st.button("Let's play"):
         st.session_state.show_game_intro = False
-        scroll()
+        #scroll()
         st.rerun()
     
 # ------------------ VÉGEREDMÉNY FELÜLET ------------------
