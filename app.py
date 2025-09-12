@@ -178,7 +178,7 @@ elif st.session_state.show_summary:
 # ------------------ JÁTÉK FELÜLET ------------------
 else:
     st.image("header.png", use_container_width=True)
-    st.subheader(f"Let's play the game, {st.session_state.nickname}! 🎮")
+    st.subheader(f"Let's play the game, {st.session_state.nickname}!")
     st.markdown("<hr style='border:1px solid #F15922; margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
     if st.button("Back to description"):
@@ -362,6 +362,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
