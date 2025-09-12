@@ -78,6 +78,7 @@ if not st.session_state.logged_in:
     </script>
     """, unsafe_allow_html=True)
 
+
     if st.button("Login"):
 
         #Checkolja e-mailt!
@@ -141,9 +142,11 @@ elif st.session_state.show_game_intro:
         #scroll()
         st.rerun()
     
+
+
 # ------------------ VÉGEREDMÉNY FELÜLET ------------------
 elif st.session_state.show_summary:
-    app_final_result.calculate_results(github_token)
+    app_final_result.calculate_results(github_token, st.session_state.nickname, st.session_state.email)
 
 
 
@@ -266,8 +269,6 @@ else:
                 selections_with_profit = selections.copy()
                 selections_with_profit["Profit"] = profit_value
                 st.session_state.attempts[i] = selections_with_profit
-
-
 
                 st.rerun()
 
