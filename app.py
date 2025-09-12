@@ -35,18 +35,25 @@ if "selections" not in st.session_state:
     st.session_state.selections = {}
 if 'scroll_to_top' not in st.session_state:
     st.session_state.scroll_to_top = False
-if 'scroll_to_header' not in st.session_state:
-    st.session_state.scroll_to_header = False
+if 'scroll_to_top_Delay' not in st.session_state:
+    st.session_state.scroll_to_top_Delay = False
 
 
 if st.session_state.scroll_to_top:
     scroll_to_here(0, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
+
+if st.session_state.scroll_to_top:
+    scroll_to_here(0, key="top")  # Scroll to the top of the page
+    st.session_state.scroll_to_top_Delay = False  # Reset the state after scrolling
     time.sleep(0.7)
     st.rerun()    
 
 def scroll():
     st.session_state.scroll_to_top = True
+
+def scroll_Delay():
+    st.session_state.scroll_to_top_Delay = True
 
 
 
@@ -150,7 +157,7 @@ elif st.session_state.show_game_intro:
     app_game_description.game_info()
     if st.button("Let's play"):               
         st.session_state.show_game_intro = False
-        scroll()
+        scroll_Delay()
         st.rerun()
     
 
@@ -320,7 +327,7 @@ else:
                 # New attempt gomb
                 if i < total_attempts - 1 and st.session_state.attempts[i+1] is None:
                     if st.button("Next round! Let’s do this! 🔄", key=f"new_attempt_{i}"):
-                        scroll()
+                        scroll_Delay()
                         st.session_state.current_tab = i + 1  
                         st.rerun()
                         
@@ -349,11 +356,6 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
-
-
-
-
-
 
 
 
