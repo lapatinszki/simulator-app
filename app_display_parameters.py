@@ -2,12 +2,12 @@ import streamlit as st
 
 # ---------------- Paraméterek  ----------------
 param_cols = {
-    "Size of the batches": "Size of the batches",
-    "Type of the shipping box": "Size of the shipping box",
+    "Size of the batches": "Bactch size",
+    "Type of the shipping box": "Shipping box size",
     "Cycle time factor": "Machine - Cycle time factor [%]",
-    "Number of the operators": "Number of the operators",
-    "Type of the quality check": "Type of the quality check",
-    "Percentage of the quality check": "Percentage of the quality check [%]",
+    "Number of the operators": "Employee headcount",
+    "Type of the quality check": "Quality check type",
+    "Percentage of the quality check": "Quality check rate [%]",
     "Overshooting": "Overshooting [%]"
 }
 
@@ -100,10 +100,4 @@ def display_inputs(attempt_idx):
             st.markdown("<hr style='border:1px solid rgba(241, 89, 34, 0.3); margin:0px 0'>", unsafe_allow_html=True) #Vízszintes vonal
 
     return selections
-
-
-
-
-
-
 
