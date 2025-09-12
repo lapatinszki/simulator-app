@@ -58,8 +58,8 @@ def game_info():
     <div style='text-align: justify; margin-top:10px;'>
     <div style='text-align: justify;'>
     <b><span style='color:{highlight_color}'>1.</span> <span style='color:{highlight_color}'>Batch size (8 / 24 / 40 pcs)</span></b><br>
-    <i>Small ⟶ faster start but more changeovers<br></i>
-    <i>Large ⟶ fewer changeovers but slower start</i>
+    <i>Small ⟶ faster start, but more changeovers<br></i>
+    <i>Large ⟶ fewer changeovers, but slower start</i>
     </div>
 
     <div style='text-align: justify; margin-top:10px;'>            
@@ -79,8 +79,8 @@ def game_info():
     <div style='text-align: justify; margin-top:10px;'>
     <div style='text-align: justify;'>
     <b><span style='color:{highlight_color}'>4.</span> <span style='color:{highlight_color}'>Employee headcount (1 / 2 / 3 operators)</span></b><br>
-    <i>Fewer operators ⟶ lower cost but higher downtime risk<br></i>
-    <i>More operators ⟶ higher cost but smoother production flow</i>
+    <i>Fewer operators ⟶ lower cost, but higher downtime risk<br></i>
+    <i>More operators ⟶ higher cost, but smoother production flow</i>
     </div>
 
     <div style='text-align: justify; margin-top:10px;'>
