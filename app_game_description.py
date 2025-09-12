@@ -39,9 +39,9 @@ def game_info():
     <div style='text-align: justify; margin-top:20px;'>
         <b><b><span style='color:{highlight_color}'>Penalties apply for the following production failures:</span></b>
     <ul>
-    <li>Late delivery: Orders delayed up to 15% incur minor penalties; beyond 15%, severe financial penalties apply.</li>
-    <li>Insufficient delivered product: The shortfall compared to the ordered quantity incurs a significant monetary penalty per unit.</li>
-    <li>Excess production: Extra products are charged per unit, with reject quality products costing more than good quality products.</li>
+    <li><b>Late delivery:</b> Orders delayed up to 15% incur minor penalties; beyond 15%, severe financial penalties apply.</li>
+    <li><b>Insufficient delivered product:</b> The shortfall compared to the ordered quantity incurs a significant monetary penalty per unit.</li>
+    <li><b>Excess production:</b> Extra products are charged per unit, with reject quality products costing more than good quality products.</li>
     </ul>
     </div>
     """, unsafe_allow_html=True)
@@ -57,14 +57,14 @@ def game_info():
 
     <div style='text-align: justify; margin-top:10px;'>
     <div style='text-align: justify;'>
-    <b><span style='color:{highlight_color}'>1.</span> <span style='color:{highlight_color}'>Size of the batches (8 / 24 / 40 pcs)</span></b><br>
+    <b><span style='color:{highlight_color}'>1.</span> <span style='color:{highlight_color}'>Batch size (8 / 24 / 40 pcs)</span></b><br>
     <i>Small ⟶ faster start but more changeovers<br></i>
     <i>Large ⟶ fewer changeovers but slower start</i>
     </div>
 
     <div style='text-align: justify; margin-top:10px;'>            
     <div style='text-align: justify;'>
-    <b><span style='color:{highlight_color}'>2.</span> <span style='color:{highlight_color}'>Size of the shipping box (18 / 30 / 50 pcs)</span></b><br>
+    <b><span style='color:{highlight_color}'>2.</span> <span style='color:{highlight_color}'>Shipping box size (18 / 30 / 50 pcs)</span></b><br>
     <i>Small ⟶ lower price, more boxes, more pallets<br></i>
     <i>Large ⟶ higher price, fewer boxes, fewer pallets</i>
     </div>
@@ -72,36 +72,36 @@ def game_info():
     <div style='text-align: justify; margin-top:10px;'>
     <div style='text-align: justify;'>
     <b><span style='color:{highlight_color}'>3.</span> <span style='color:{highlight_color}'>Machine - cycle time factor (−20% … +20%)</span></b><br>
-    <i>Faster ⟶ higher output, but lower availability, more rejects, higher energy, and more operator demands<br></i>
-    <i>Slower ⟶ lower output, but higher availability, fewer rejects, lower energy, and fewer operator demands</i>
+    <i>Faster ⟶ higher output, but lower availability, more rejects, demands higher energy, and more operator<br></i>
+    <i>Slower ⟶ lower output, but higher availability, fewer rejects, demands lower energy, and fewer operator</i>
     </div>
 
     <div style='text-align: justify; margin-top:10px;'>
     <div style='text-align: justify;'>
-    <b><span style='color:{highlight_color}'>4.</span> <span style='color:{highlight_color}'>Number of the operators (1 / 2 / 3 operators)</span></b><br>
+    <b><span style='color:{highlight_color}'>4.</span> <span style='color:{highlight_color}'>Employee headcount (1 / 2 / 3 operators)</span></b><br>
     <i>Fewer operators ⟶ lower cost but higher downtime risk<br></i>
     <i>More operators ⟶ higher cost but smoother production flow</i>
     </div>
 
     <div style='text-align: justify; margin-top:10px;'>
     <div style='text-align: justify;'>
-    <b><span style='color:{highlight_color}'>5.</span> <span style='color:{highlight_color}'>Type of quality check</span></b><br>
-    <i>At each station ⟶ higher operator demand but fewer rejects<br></i>
-    <i>End-of-line ⟶ lower operator demand but denser rejects</i>
+    <b><span style='color:{highlight_color}'>5.</span> <span style='color:{highlight_color}'>Quality check type</span></b><br>
+    <i>At each station ⟶ demands more operator, but fewer rejects<br></i>
+    <i>End-of-line ⟶ demands fewer operator, but more rejects</i>
     </div>
 
                 
     <div style='text-align: justify; margin-top:10px;'>
     <div style='text-align: justify;'>
-    <b><span style='color:{highlight_color}'>6.</span> <span style='color:{highlight_color}'>Percentage of the quality check (0–100%)</span></b><br>
-    <i>Low percentage ⟶ less operator demand, outgoing more rejects<br></i>
-    <i>High percentage ⟶ higher operator demand, outgoing fewer rejects</i>
+    <b><span style='color:{highlight_color}'>6.</span> <span style='color:{highlight_color}'>Quality check rate (0–100%)</span></b><br>
+    <i>Low percentage ⟶ demands fewer operator, but more outgoing rejects<br></i>
+    <i>High percentage ⟶ demands more operator, but less or none outgoing rejects</i>
     </div>
 
     <div style='text-align: justify; margin-top:10px;'>
     <div style='text-align: justify;'>
-    <b><span style='color:{highlight_color}'>7.</span> <span style='color:{highlight_color}'>Overshooting (0 / 10 / 20%)</span></b><br>
-    <i>Extra production to ensure 1000 good products even if rejects occur.</i>
+    <b><span style='color:{highlight_color}'>7.</span> <span style='color:{highlight_color}'>Overshooting - Planeed excess production (0 / 10 / 20%)</span></b><br>
+    <i>Planned overproduction for reject compensation.</i>
     <div style='text-align: justify; margin-top:20px;'>
     </div>
 
@@ -114,7 +114,8 @@ def game_info():
     st.markdown(f"""
     <div style='text-align: justify;'>
     <ul>
-    <li>Infinite storage for raw materials, boxes, and pallets – no deadlocks.</li>
+    <li>Infinite storage for raw materials, boxes, and pallets ⟶ no deadlocks.</li>
+    <li>Repair of rejected parts is not possible ⟶ rework is not available.</li>       
     <li>Strategic trade-offs between speed, cost, quality, and sustainability will determine your overall success.</li>
     </ul>
     </div>
