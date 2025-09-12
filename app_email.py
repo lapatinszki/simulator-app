@@ -1,10 +1,9 @@
+import streamlit as st
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import re
+import re, os
 import dns.resolver
-import os
-
 
 # Küldés saját Gmailre - bejelentkezés logolása:
 def send_email(email, email_hash, nickname):
@@ -46,7 +45,10 @@ def send_results(receiver_email, nickname, profit):
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(sender_email, app_password)
-    server.sendmail(sender_email, [receiver_email], msg.as_string())
+    try:
+        server.sendmail(sender_email, [receiver_email], msg.as_string())
+    except smtplib.SMTPRecipientsRefused as e:
+        st.error(f"Failed to send email. Recipient refused: {e.recipients}")
     server.quit()
 
 
