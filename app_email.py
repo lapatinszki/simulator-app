@@ -44,9 +44,11 @@ def send_results(receiver_email, nickname, profit):
      <body>
          Dear <b>{nickname}</b>,<br><br>
 
-         Congratulations, you’ve completed the Mini Factory Challenge! 🏭<br>
+         Congratulations, you’ve completed the Mini Factory Challenge! 🏭<br><br>
+         
          Your best result: <b>€{profit}</b> out of the maximum possible <b>€619.78</b>.<br>
-         Not bad! 😎<br>
+         Not bad! 😎<br><br>
+
          But think about it: in real life, every decision has an even bigger impact on costs, quality, sustainability, and profit. This game was just a glimpse into how many parameters, trade-offs, and choices shape modern production processes.<br><br>
 
          <b>Relax, it’s just a game. Or… is it?</b> 👀<br><br>
