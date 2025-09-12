@@ -36,7 +36,8 @@ def send_results(receiver_email, nickname, profit):
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = receiver_email
-    msg['Subject'] = "🏆 Factory Manager Challenge – Your results are in!"
+    from email.header import Header
+    msg['Subject'] = Header("🏆 Factory Manager Challenge – Your results are in!", 'utf-8')
 
     # HTML body
     body = f"""
@@ -64,12 +65,12 @@ def send_results(receiver_email, nickname, profit):
     </html>
     """
 
-    msg.attach(MIMEText(body, 'html'))  # HTML MIME típus
+    msg.attach(MIMEText(body, 'html', 'utf-8'))
 
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(sender_email, app_password)
-    server.sendmail(sender_email, receiver_email, msg.as_string())  # címzett listában
+    server.sendmail(sender_email, [receiver_email], msg.as_string())  # címzett listában
     server.quit()
 
 
