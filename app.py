@@ -42,7 +42,7 @@ if 'scroll_to_header' not in st.session_state:
 if st.session_state.scroll_to_top:
     scroll_to_here(0, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
-    time.sleep(0.3)
+    time.sleep(0.7)
     st.rerun()    
 
 def scroll():
@@ -348,6 +348,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
