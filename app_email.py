@@ -63,7 +63,7 @@ def send_results(receiver_email, nickname, profit):
      </body>
      </html>
      """
-    msg.attach(MIMEText(body, 'plain'))
+    msg.attach(MIMEText(body, 'html', 'utf-8'))
 
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
