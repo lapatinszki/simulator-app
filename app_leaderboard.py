@@ -1,16 +1,5 @@
 import streamlit as st
 import pandas as pd
-import time
-
-# ---------- Automatikus frissítés ----------
-refresh_rate = 10  # másodperc
-
-if 'last_refresh' not in st.session_state:
-    st.session_state['last_refresh'] = time.time()
-
-if time.time() - st.session_state['last_refresh'] > refresh_rate:
-    st.session_state['last_refresh'] = time.time()
-    st.experimental_rerun()
 
 # ---------- Streamlit UI ----------
 st.image("header.png", use_container_width=True)
@@ -22,17 +11,15 @@ df = df.sort_values("Profit", ascending=False).reset_index(drop=True)
 df["Rank"] = df.index + 1
 
 # Érem színek az első 3 helyezéshez
-bg_colors = {1: "#B9A534", 2: "#858585", 3: "#AD7134"}  # arany, ezüst, bronz
-border_color = "#FFFFFF"  # keret szín a 4. helytől
+bg_colors = {1: "#B9A534", 2: "#858585", 3: "#AD7134"}
+border_color = "#FFFFFF"
 
-# HTML lista összeállítása
 leaderboard_html = ""
 for _, row in df.iterrows():
     rank = row["Rank"]
     nickname = row["Nickname"]
     profit = row["Profit"]
 
-    # Külső div stílus
     style = f"""
     background-color:{bg_colors.get(rank, 'transparent')};
     border-radius:12px;
@@ -44,14 +31,8 @@ for _, row in df.iterrows():
     align-items:center;
     font-family:sans-serif;
     """
-
-    # Belső div stílus
-    inner_div_style = """
-    display:flex;
-    align-items:center;
-    """
-
-    nickname_style = "font-weight:bold; font-size:16px; margin-left:10px;"  # margin-left a gap helyett
+    inner_div_style = "display:flex; align-items:center;"
+    nickname_style = "font-weight:bold; font-size:16px; margin-left:10px;"
 
     leaderboard_html += f"""
     <div style="{style}">
@@ -63,22 +44,28 @@ for _, row in df.iterrows():
     </div>
     """
 
-# Scrollable div és automatikus görgetés JavaScript-tel
+# Scrollable div és automatikus görgetés
 scroll_html = f"""
 <div id="leaderboard" style="height:400px; overflow:auto;">
     {leaderboard_html}
 </div>
 
 <script>
+// Lassú scroll
 var div = document.getElementById("leaderboard");
 var scrollHeight = div.scrollHeight - div.clientHeight;
 var current = 0;
 function scrollDown() {{
     current += 1;
-    if(current > scrollHeight) current = 0;  // vissza az elejére
+    if(current > scrollHeight) current = 0;
     div.scrollTop = current;
 }}
-setInterval(scrollDown, 50); // lassú scroll, 50ms-enként
+setInterval(scrollDown, 50);
+
+// Automatikus újratöltés 10 másodpercenként
+setTimeout(function(){{
+    window.location.reload();
+}}, 10000);
 </script>
 """
 
