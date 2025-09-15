@@ -87,7 +87,7 @@ st.markdown("""
   z-index: 1;
 }
 
-.tooltip-wrapper:hover .tooltip-text {
+.tooltip-wrapper:focus .tooltip-text {
   visibility: visible;
 }
 </style>
@@ -143,7 +143,7 @@ def display_inputs(attempt_idx):
                 st.markdown(f"""
                 <div style='margin:0; padding:0';">
                     <div style='margin:0; padding:0'>{label}:
-                    <span class="tooltip-wrapper">
+                    <span class="tooltip-wrapper" tabindex="0">
                         <span class="tooltip-icon">i</span>
                         <span class="tooltip-text">{tooltip_text}</span>
                     </span>
@@ -173,7 +173,7 @@ def display_inputs(attempt_idx):
                 st.markdown(f"""
                     <div style='margin:0; padding:0';">
                         <div style='margin:0; padding:0'>{label}:
-                        <span class="tooltip-wrapper">
+                        <span class="tooltip-wrapper" tabindex="0">
                             <span class="tooltip-icon">i</span>
                             <span class="tooltip-text">{tooltip_text}</span>
                         </span>
