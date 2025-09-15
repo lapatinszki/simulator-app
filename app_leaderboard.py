@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
 
-# ---------- Streamlit UI ----------
+st.set_page_config(layout="wide")
+
 st.image("header.png", use_container_width=True)
 st.subheader("Leaderboard 🏆")
 
@@ -10,7 +11,6 @@ df = pd.read_csv("table_Leaderboard.csv", encoding="utf-8", header=0)
 df = df.sort_values("Profit", ascending=False).reset_index(drop=True)
 df["Rank"] = df.index + 1
 
-# Érem színek az első 3 helyezéshez
 bg_colors = {1: "#B9A534", 2: "#858585", 3: "#AD7134"}
 border_color = "#FFFFFF"
 
@@ -21,7 +21,7 @@ for _, row in df.iterrows():
     profit = row["Profit"]
 
     style = f"""
-    background-color:{bg_colors.get(rank, 'transparent')};
+    background-color:{bg_colors.get(rank,'transparent')};
     border-radius:12px;
     border:1px solid {border_color};
     padding:12px 20px;
@@ -44,14 +44,13 @@ for _, row in df.iterrows():
     </div>
     """
 
-# Scrollable div és automatikus görgetés
+# Scroll + automatikus frissítés JS
 scroll_html = f"""
-<div id="leaderboard" style="height:400px; overflow:auto;">
+<div id="leaderboard" style="height:500px; overflow:auto;">
     {leaderboard_html}
 </div>
 
 <script>
-// Lassú scroll
 var div = document.getElementById("leaderboard");
 var scrollHeight = div.scrollHeight - div.clientHeight;
 var current = 0;
@@ -62,7 +61,7 @@ function scrollDown() {{
 }}
 setInterval(scrollDown, 50);
 
-// Automatikus újratöltés 10 másodpercenként
+// 10 másodpercenként frissítés
 setTimeout(function(){{
     window.location.reload();
 }}, 10000);
