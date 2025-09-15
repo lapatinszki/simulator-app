@@ -38,61 +38,14 @@ import streamlit as st
 
 # Tooltip szövegek HTML formázással
 info_texts = {
-    "Size of the batches": "<i>Small ⟶ faster start, but more changeovers<br>Large ⟶ fewer changeovers, but slower start</i>",
-    "Type of the shipping box": "<i>Small ⟶ lower price, more boxes, more pallets<br></i><i>Large ⟶ higher price, fewer boxes, fewer pallets</i>",
-    "Cycle time factor": "<i>Faster ⟶ higher output, but lower availability, more rejects, demands higher energy, and more operator<br></i><i>Slower ⟶ lower output, but higher availability, fewer rejects, demands lower energy, and fewer operator</i>",
-    "Number of the operators": "<i>Fewer operators ⟶ lower cost, but higher downtime risk<br></i><i>More operators ⟶ higher cost, but smoother production flow</i>",
-    "Type of the quality check": "<i>At each station ⟶ demands more operator, but fewer rejects<br></i><i>End-of-line ⟶ demands fewer operator, but more rejects</i>",
-    "Percentage of the quality check": "<i>Low percentage ⟶ demands fewer operator, but more outgoing rejects<br></i><i>High percentage ⟶ demands more operator, but less or none outgoing rejects</i>",
+    "Size of the batches": "Small ⟶ faster start, but more changeovers. Large ⟶ fewer changeovers, but slower start.",
+    "Type of the shipping box": "Small ⟶ lower price, more boxes, more pallets.\nLarge ⟶ higher price, fewer boxes, fewer pallets.",
+    "Cycle time factor": "Faster ⟶ higher output, but lower availability, more rejects, demands higher energy, and more operator.\nSlower ⟶ lower output, but higher availability, fewer rejects, demands lower energy, and fewer operator.",
+    "Number of the operators": "Fewer operators ⟶ lower cost, but higher downtime risk.\nMore operators ⟶ higher cost, but smoother production flow.",
+    "Type of the quality check": "At each station ⟶ demands more operator, but fewer rejects.\nEnd-of-line ⟶ demands fewer operator, but more rejects.",
+    "Percentage of the quality check": "Low percentage ⟶ demands fewer operator, but more outgoing rejects.\nHigh percentage ⟶ demands more operator, but less or none outgoing rejects.",
     "Overshooting": "Planned overproduction for reject compensation."
 }
-
-# CSS a tooltiphez
-st.markdown("""
-<style>
-.tooltip-wrapper {
-  display: inline-block;
-  position: relative;
-  margin-left: 2px;
-}
-
-.tooltip-icon {
-  display: inline-block;
-  background-color: #17a2b8;
-  color: white;
-  font-family: Arial, sans-serif;
-  width: 16px;
-  height: 16px;
-  line-height: 16px;
-  font-size: 12px;
-  border-radius: 50%;
-  text-align: center;
-  cursor: pointer;
-}
-
-.tooltip-text {
-  visibility: hidden;
-  width: 350px;
-  background-color: #333;
-  color: #fff;
-  text-align: left;
-  padding: 4px 4px;
-  border-radius: 6px;
-  position: absolute;
-  bottom: 125%;
-  left: 0%;
-  transform: translateX(-24%);
-  font-size: 12px;
-  line-height: 1.4;
-  z-index: 1;
-}
-
-.tooltip-wrapper:active .tooltip-text {
-  visibility: visible;
-}
-</style>
-""", unsafe_allow_html=True)
-
 
 # ---------------- Fő függvény a bemenetekhez ----------------
 def display_inputs(attempt_idx):
@@ -141,14 +94,14 @@ def display_inputs(attempt_idx):
 
                 # Paraméter név + tooltip közvetlenül a slider fölé
                 st.markdown(f"""
-                <div style='margin:0; padding:0';">
-                    <div style='margin:0; padding:0'>{label}:
-                    <span class="tooltip-wrapper">
-                        <span class="tooltip-icon">i</span>
-                        <span class="tooltip-text">{tooltip_text}</span>
-                    </span>
-                </div>
+                    <div style='margin:0; padding:0'>
+                        <strong>{label}:</strong>
+                    </div>
+                    <div style='font-size:12px; color:#919090; margin:0 0 0px 0, white-space:pre-line;'>
+                        {tooltip_text.replace("\n", "<br>")}
+                    </div>
                 """, unsafe_allow_html=True)
+
                 selected_label = st.slider(
                     "",  # üres label
                     min_value=min_val,
@@ -171,14 +124,13 @@ def display_inputs(attempt_idx):
 
                 # Paraméter név + tooltip közvetlenül a radio box fölé
                 st.markdown(f"""
-                    <div style='margin:0; padding:0';">
-                        <div style='margin:0; padding:0'>{label}:
-                        <span class="tooltip-wrapper">
-                            <span class="tooltip-icon">i</span>
-                            <span class="tooltip-text">{tooltip_text}</span>
-                        </span>
+                    <div style='margin:0; padding:0'>
+                        <strong>{label}:</strong>
                     </div>
-                    """, unsafe_allow_html=True)
+                    <div style='font-size:12px; color:#919090; margin:0 0 0px 0, white-space:pre-line;'>
+                        {tooltip_text.replace("\n", "<br>")}
+                    </div>
+                """, unsafe_allow_html=True)
                 
                 selected_label = st.radio(
                     "",  # üres label
