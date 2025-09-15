@@ -5,7 +5,7 @@ st.image("header.png", use_container_width=True)
 st.subheader("Leaderboard 🏆")
 
 # CSV betöltése
-df = pd.read_csv("table_Leaderboard.csv", encoding="cp1252", header=0)  # Feltételezve: Nickname és Profit oszlop
+df = pd.read_csv("table_Leaderboard.csv", encoding="utf-8", header=0)  # Feltételezve: Nickname és Profit oszlop
 df = df.sort_values("Profit", ascending=False).reset_index(drop=True)
 
 # Helyezés hozzáadása
