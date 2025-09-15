@@ -64,7 +64,7 @@ if st.session_state.scroll_to_top:
 elif st.session_state.scroll_to_top_Delay:
     scroll_to_here(0, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top_Delay = False  # Reset the state after scrolling
-    time.sleep(0.7)
+    time.sleep(0.8)
     st.rerun() 
 
 
@@ -362,6 +362,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
