@@ -1,6 +1,35 @@
 import streamlit as st
 import pandas as pd
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import threading
+import time
+import os
 
+# ---------- Watchdog beállítás ----------
+class CSVHandler(FileSystemEventHandler):
+    def on_modified(self, event):
+        if event.src_path.endswith("table_Leaderboard.csv"):
+            st.experimental_rerun()  # újratöltjük a Streamlit appot
+
+# Watchdog futtatása külön szálon
+def start_watchdog():
+    observer = Observer()
+    observer.schedule(CSVHandler(), path=".", recursive=False)
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
+
+# Külön szál indítása csak egyszer
+if 'watchdog_started' not in st.session_state:
+    threading.Thread(target=start_watchdog, daemon=True).start()
+    st.session_state['watchdog_started'] = True
+
+# ---------- Streamlit UI ----------
 st.image("header.png", use_container_width=True)
 st.subheader("Leaderboard 🏆")
 
@@ -21,7 +50,6 @@ for _, row in df.iterrows():
     profit = row["Profit"]
 
     if rank <= 3:
-        # Háttérszín az első 3 helynek
         style = f"""
         background-color:{bg_colors[rank]};
         border-radius:12px;
@@ -34,7 +62,6 @@ for _, row in df.iterrows():
         font-family:sans-serif;
         """
     else:
-        # Átlátszó doboz csak kerettel
         style = f"""
         background-color:transparent;
         border-radius:12px;
@@ -56,4 +83,3 @@ for _, row in df.iterrows():
         <div style="font-size:16px;">€{profit:.2f}</div>
     </div>
     """, unsafe_allow_html=True)
-
