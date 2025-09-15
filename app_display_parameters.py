@@ -80,8 +80,8 @@ st.markdown("""
   border-radius: 6px;
   position: absolute;
   bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0%;
+  transform: translateX(-24%);
   font-size: 12px;
   line-height: 1.4;
   z-index: 1;
