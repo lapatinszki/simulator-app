@@ -1,33 +1,10 @@
 import streamlit as st
 import pandas as pd
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-import threading
-import time
-import os
+from streamlit_autorefresh import st_autorefresh
 
-# ---------- Watchdog beállítás ----------
-class CSVHandler(FileSystemEventHandler):
-    def on_modified(self, event):
-        if event.src_path.endswith("table_Leaderboard.csv"):
-            st.experimental_rerun()  # újratöltjük a Streamlit appot
-
-# Watchdog futtatása külön szálon
-def start_watchdog():
-    observer = Observer()
-    observer.schedule(CSVHandler(), path=".", recursive=False)
-    observer.start()
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-    observer.join()
-
-# Külön szál indítása csak egyszer
-if 'watchdog_started' not in st.session_state:
-    threading.Thread(target=start_watchdog, daemon=True).start()
-    st.session_state['watchdog_started'] = True
+# ---------- Automatikus frissítés ----------
+# 10 másodpercenként újratölti az oldalt
+st_autorefresh(interval=10 * 1000, key="leaderboard_refresh")
 
 # ---------- Streamlit UI ----------
 st.image("header.png", use_container_width=True)
