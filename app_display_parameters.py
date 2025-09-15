@@ -127,7 +127,7 @@ def display_inputs(attempt_idx):
                     <div style='margin:0; padding:0'>
                         <strong>{label}:</strong>
                     </div>
-                    <div style='font-size:12px; color:#919090; margin:0 0 0px 0, white-space:pre-line;'>
+                    <div style='font-size:12px; color:#919090; margin:0 0 0 0; white-space:pre-line;'>
                         {tooltip_text.replace("\n", "<br>")}
                     </div>
                 """, unsafe_allow_html=True)
