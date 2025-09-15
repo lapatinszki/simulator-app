@@ -357,11 +357,13 @@ else:
                     if st.button("✅ Yes, I’m ready for my results!", key=f"confirm_yes_{i}"):
                         st.session_state.show_summary = True
                         st.session_state.confirm_finish = False
+                        scroll_Delay()
                         st.rerun()
                     if st.button("❌ No, I'll keep palying!", key=f"confirm_no_{i}"):
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
