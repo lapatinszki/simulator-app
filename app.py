@@ -58,7 +58,7 @@ except: github_token = None
 if st.session_state.scroll_to_top:
     scroll_to_here(0, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
-    time.sleep(0.1)
+    time.sleep(0.25)
     st.rerun() 
 
 elif st.session_state.scroll_to_top_Delay:
@@ -362,6 +362,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
