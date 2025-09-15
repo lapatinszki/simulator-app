@@ -1,6 +1,7 @@
 import app_modify_GitTable, app_modify_tables, app_email
 import streamlit.components.v1 as components
 import streamlit as st
+import time
 
 def calculate_results(github_token, nickname, email):
     # Maximum profit a játékos összes attempt-jából
@@ -25,6 +26,7 @@ def calculate_results(github_token, nickname, email):
         rank_str = ordinal(rank)
 
 
+    time.sleep(1)
     html_content = f"""
     <style>
     .container {{
@@ -92,7 +94,7 @@ def calculate_results(github_token, nickname, email):
     </script>
 
         <div class="slide-up delay-4" style='font-size:14px; margin-top:0px;'>
-            Congratulations!🎉 You completed the game successfully.
+            Congratulations! 🎉 You completed the game successfully.
         </div>
 
         <div class="slide-up delay-5" style='font-size:18px; font-weight:bold; color:#F15922; margin-top:50px;'>
