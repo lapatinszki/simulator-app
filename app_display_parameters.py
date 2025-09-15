@@ -38,12 +38,12 @@ import streamlit as st
 
 # Tooltip szövegek HTML formázással
 info_texts = {
-    "Size of the batches": "Small ⟶ faster start, but more changeovers. Large ⟶ fewer changeovers, but slower start.",
-    "Type of the shipping box": "Small ⟶ lower price, more boxes, more pallets.\nLarge ⟶ higher price, fewer boxes, fewer pallets.",
-    "Cycle time factor": "Faster ⟶ higher output, but lower availability, more rejects, demands higher energy, and more operator.\nSlower ⟶ lower output, but higher availability, fewer rejects, demands lower energy, and fewer operator.",
-    "Number of the operators": "Fewer operators ⟶ lower cost, but higher downtime risk.\nMore operators ⟶ higher cost, but smoother production flow.",
-    "Type of the quality check": "At each station ⟶ demands more operator, but fewer rejects.\nEnd-of-line ⟶ demands fewer operator, but more rejects.",
-    "Percentage of the quality check": "Low percentage ⟶ demands fewer operator, but more outgoing rejects.\nHigh percentage ⟶ demands more operator, but less or none outgoing rejects.",
+    "Size of the batches": "<b>Small</b> ⟶ faster start, but more changeovers.\n <b>Large</b> ⟶ fewer changeovers, but slower start.",
+    "Type of the shipping box": "<b>Small</b> ⟶ lower price, more boxes, more pallets.\n<b>Large</b> ⟶ higher price, fewer boxes, fewer pallets.",
+    "Cycle time factor": "<b>Faster</b> ⟶ higher output, but lower availability, more rejects, demands higher energy, and more operator.\n<b>Slower</b> ⟶ lower output, but higher availability, fewer rejects, demands lower energy, and fewer operator.",
+    "Number of the operators": "<b>Fewer operators</b> ⟶ lower cost, but higher downtime risk.\n<b>More operators</b> ⟶ higher cost, but smoother production flow.",
+    "Type of the quality check": "<b>At each station</b> ⟶ demands more operator, but fewer rejects.\n<b>End-of-line</b> ⟶ demands fewer operator, but more rejects.",
+    "Percentage of the quality check": "<b>Low percentage</b> ⟶ demands fewer operator, but more outgoing rejects.\n<b>High percentage</b> ⟶ demands more operator, but less or none outgoing rejects.",
     "Overshooting": "Planned overproduction for reject compensation."
 }
 
@@ -127,7 +127,7 @@ def display_inputs(attempt_idx):
                     <div style='margin:0; padding:0'>
                         <strong>{label}:</strong>
                     </div>
-                    <div style='font-size:12px; color:#919090; margin:0 0 0 0; white-space:pre-line;'>
+                    <div style='font-size:12px; color:#919090; margin:0 0 0px 0, white-space:pre-line;'>
                         {tooltip_text.replace("\n", "<br>")}
                     </div>
                 """, unsafe_allow_html=True)
