@@ -1,86 +1,59 @@
-import app_modify_GitTable, app_modify_tables, app_email
-import streamlit.components.v1 as components
 import streamlit as st
+import pandas as pd
 
-def calculate_results(github_token, nickname, email):
-    # Maximum profit a játékos összes attempt-jából
-    attempts = [a for a in st.session_state.attempts if a is not None]
-    if attempts:
-        profits = [a["Profit"] for a in attempts]
-        max_profit = max(profits)
+st.image("header.png", use_container_width=True)
+st.subheader("Leaderboard 🏆")
 
-        if github_token == None: #Lokális futtatás
-            rank = app_modify_tables.get_rank_for_profit(max_profit)
-        else: #Cloud futtatás
-            rank = app_modify_GitTable.get_rank_for_profit(max_profit, "lapatinszki/simulator-app")
+# CSV betöltése
+df = pd.read_csv("table_Leaderboard.csv", encoding="utf-8", header=0)  # Feltételezve: Nickname és Profit oszlop
+df = df.sort_values("Profit", ascending=False).reset_index(drop=True)
 
-        # --- Ordinal suffix függvény ---
-        def ordinal(n):
-            if 10 <= n % 100 <= 20:
-                suffix = "th"
-            else:
-                suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
-            return f"{n}{suffix}"
+# Helyezés hozzáadása
+df["Rank"] = df.index + 1
 
-        rank_str = ordinal(rank)
+# Érem színek az első 3 helyezéshez
+bg_colors = {1: "#B9A534", 2: "#858585", 3: "#AD7134"}  # arany, ezüst, bronz
+border_color = "#FFFFFF"  # keret szín a 4. helytől
 
-        # --- HTML a megjelenítéshez ---
-        html_content = f"""
-            <style>
-            .container {{
-            position: relative;
-            overflow: hidden;
-            height: 250px;
-            margin-bottom: 5px;
-            text-align: center;
-            color: white;
-            }}
-            @keyframes slideUp {{
-            0% {{opacity: 0; transform: translateY(100%);}}
-            100% {{opacity: 1; transform: translateY(0);}}
-            }}
-            .slide-up {{
-            opacity: 0;
-            animation: slideUp 1s ease-out forwards;
-            }}
-            .slide-up.delay-1 {{ animation-delay: 1.0s; }}
-            .slide-up.delay-2 {{ animation-delay: 1.5s; }}
-            .slide-up.delay-3 {{ animation-delay: 2.0s; }}
-            .slide-up.delay-4 {{ animation-delay: 2.5s; }}
-            </style>
+for _, row in df.iterrows():
+    rank = row["Rank"]
+    nickname = row["Nickname"]
+    profit = row["Profit"]
 
-            <div class="container">
-            <div class="slide-up delay-1" style='font-size:18px; margin-bottom:5px;'>
-            Your highest profit: <span style="color:#F15922; font-weight:bold;">{max_profit:.2f} €</span>
-            </div>
-            <div class="slide-up delay-2" style='font-size:18px; margin-bottom:5px;'>
-            Your rank in the current leaderboard:
-            </div>
-            <div class="slide-up delay-3" style='font-size:72px; font-weight:bold; margin-bottom:5px; color:#F15922;'>
-            {rank_str}
-            </div>
-            <div class="slide-up delay-4" style='font-size:14px; margin-top:5px;'>
-            Congratulations! You completed the game successfully.🎉
-            </div>
-            </div>
+    if rank <= 3:
+        # Háttérszín az első 3 helynek
+        style = f"""
+        background-color:{bg_colors[rank]};
+        border-radius:12px;
+        border:1px solid {border_color};
+        padding:12px 20px;
+        margin-bottom:8px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        font-family:sans-serif;
+        """
+    else:
+        # Átlátszó doboz csak kerettel
+        style = f"""
+        background-color:transparent;
+        border-radius:12px;
+        border:1px solid {border_color};
+        padding:12px 20px;
+        margin-bottom:8px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        font-family:sans-serif;
+        """
 
-            <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-            <script>
-            setTimeout(() => {{
-            confetti({{
-            particleCount: 150,
-            spread: 70,
-            origin: {{ y: 0.6 }}
-            }});
-            }}, 1900);
-            </script>
-            """
+    st.markdown(f"""
+    <div style="{style}">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-weight:bold; width:40px;">{rank}{"st" if rank==1 else "nd" if rank==2 else "rd" if rank==3 else "th"}</span>
+            <span style="font-weight:bold; font-size:16px;">{nickname}</span>
+        </div>
+        <div style="font-size:16px;">€{profit:.2f}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-        components.html(html_content, height=350)
-
-
-    #Email küldése eredményekről + infos cucc:
-    #if github_token != None: #Felhő futtatás
-    app_email.send_results(email, nickname, max_profit)
-
-    
