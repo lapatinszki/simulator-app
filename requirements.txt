@@ -6,4 +6,5 @@ PyGithub
 streamlit_scroll_to_top
 dnspython
 streamlit_autorefresh
+msal
 
