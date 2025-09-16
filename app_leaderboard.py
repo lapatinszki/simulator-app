@@ -16,53 +16,59 @@ import requests
 
 st.title("Céges M365 e-mail küldés – Streamlit Cloud (Device Flow)")
 
-# ==========================
-# Titkok beolvasása
-# ==========================
 client_id = st.secrets["azure"]["client_id"]
 tenant_id = st.secrets["azure"]["tenant_id"]
-
 authority = f"https://login.microsoftonline.com/{tenant_id}"
 scopes = ["Mail.Send"]
 
-# ==========================
 # Public Client Application
-# ==========================
 app = PublicClientApplication(client_id=client_id, authority=authority)
 
-# ==========================
-# Device Flow
-# ==========================
-flow = app.initiate_device_flow(scopes=scopes)
-st.write("Nyisd meg ezt az oldalt:", flow['verification_uri'])
-st.write("Írd be ezt a kódot:", flow['user_code'])
+# --------------------
+# 1️⃣ Device Flow generálása
+# --------------------
+if 'flow' not in st.session_state:
+    if st.button("Kód generálása"):
+        flow = app.initiate_device_flow(scopes=scopes)
+        st.session_state['flow'] = flow
+        st.success("Device Flow kód generálva!")
 
-result = app.acquire_token_by_device_flow(flow)
+if 'flow' in st.session_state:
+    flow = st.session_state['flow']
+    st.write("Nyisd meg ezt az oldalt:", flow['verification_uri'])
+    st.write("Írd be ezt a kódot:", flow['user_code'])
+    st.info("Jelentkezz be a Microsoft fiókoddal és erősítsd meg az MFA-t, ha szükséges.")
 
-if "access_token" in result:
-    token = result["access_token"]
-    st.success("Sikeres bejelentkezés!")
+    # --------------------
+    # 2️⃣ Token lekérése
+    # --------------------
+    if st.button("Token lekérése"):
+        result = app.acquire_token_by_device_flow(flow)  # poll-ol, de egyszeri gombnyomásra
+        if "access_token" in result:
+            st.session_state['token'] = result['access_token']
+            st.session_state['email'] = result['id_token_claims']['preferred_username']
+            st.success("Sikeres bejelentkezés!")
+        else:
+            st.error(f"Token hiba: {result}")
 
-    # ==========================
-    # E-mail küldés a saját mailboxra
-    # ==========================
+# --------------------
+# 3️⃣ E-mail küldés
+# --------------------
+if 'token' in st.session_state:
     subject = st.text_input("Tárgy", "Teszt Streamlit e-mail")
     body = st.text_area("Üzenet", "Helló! Ez egy teszt e-mail.")
 
     if st.button("Küldés"):
-        # Címzett a felhasználó saját mailboxa
-        my_email = result['id_token_claims']['preferred_username']
-
         email_msg = {
             "message": {
                 "subject": subject,
                 "body": {"contentType": "Text", "content": body},
-                "toRecipients": [{"emailAddress": {"address": my_email}}],
+                "toRecipients": [{"emailAddress": {"address": st.session_state['email']}}],
             },
             "saveToSentItems": "true",
         }
 
-        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        headers = {"Authorization": f"Bearer {st.session_state['token']}", "Content-Type": "application/json"}
         response = requests.post(
             "https://graph.microsoft.com/v1.0/me/sendMail",
             headers=headers,
@@ -70,14 +76,9 @@ if "access_token" in result:
         )
 
         if response.status_code == 202:
-            st.success(f"Email elküldve a saját mailboxodra: {my_email}")
+            st.success(f"Email elküldve a saját mailboxodra: {st.session_state['email']}")
         else:
             st.error(f"Hiba a küldésnél: {response.status_code} {response.text}")
-
-else:
-    st.error(f"Token hiba: {result}")
-
-
 
 
 
@@ -139,6 +140,7 @@ else:
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
