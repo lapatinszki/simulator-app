@@ -16,56 +16,79 @@ import streamlit as st
 import msal
 import requests
 
-client_id = "AZURE_CLIENT_ID"
-tenant_id = "6d93b3cc-c87c-42be-8821-f9aa6ff35108"
-authority = f"https://login.microsoftonline.com/{tenant_id}"
-redirect_uri = "http://localhost:8501"
-scopes = ["Mail.Send"]
+st.title("Céges Outlook e-mail küldés – Streamlit")
 
-st.write(authority)
-# MSAL app
-app = msal.PublicClientApplication(client_id, authority=authority)
+# ==========================
+# 1. Azure App adatok
+# ==========================
+client_id = "IDE_JÖN_AZ_APP_CLIENT_ID"   # Azure App Registration Client ID
+tenant_id = "IDE_JÖN_A_TENANT_ID"       # Azure Directory (Tenant) ID
+authority = f"https://login.microsoftonline.com/{tenant_id}"  # v2.0 is jó: /v2.0
+scopes = ["Mail.Send"]  # engedély, hogy küldhessünk e-mailt
 
-# Token beszerzése
+# ==========================
+# 2. MSAL PublicClientApplication
+# ==========================
+try:
+    app = msal.PublicClientApplication(client_id, authority=authority)
+except Exception as e:
+    st.error(f"Hiba MSAL init-nél: {e}")
+    st.stop()
+
+# ==========================
+# 3. Token lekérése (Device Flow)
+# ==========================
 flow = app.initiate_device_flow(scopes=scopes)
 if "user_code" not in flow:
-    st.error("Nem sikerült a device flow indítása.")
+    st.error("Nem sikerült elindítani a Device Flow-t.")
+    st.stop()
+
+st.write("1️⃣ Nyisd meg a következő weboldalt a böngésződben:")
+st.code(flow['verification_uri'])
+st.write("2️⃣ Írd be a következő kódot:")
+st.code(flow['user_code'])
+st.write("⚠️ Miután beírtad, várj néhány másodpercet, amíg a token megszerezhető.")
+
+result = app.acquire_token_by_device_flow(flow)  # blokkolja a futást, amíg a felhasználó be nem lép
+
+# ==========================
+# 4. Token ellenőrzése
+# ==========================
+if result is None:
+    st.error("Token megszerzése sikertelen (None jött vissza).")
+    st.stop()
+elif "access_token" not in result:
+    st.error(f"Token hiba: {result}")
+    st.stop()
 else:
-    st.write(f"Nyisd meg: {flow['verification_uri']}")
-    st.write(f"Írd be a kódot: {flow['user_code']}")
-    result = app.acquire_token_by_device_flow(flow)
-
-if "access_token" in result:
     token = result["access_token"]
+    st.success("✅ Sikeres bejelentkezés! Access token megszerezve.")
 
-    # E-mail küldés a Graph API-val
-    endpoint = "https://graph.microsoft.com/v1.0/me/sendMail"
+# ==========================
+# 5. Teszt e-mail küldése
+# ==========================
+receiver_email = st.text_input("Címzett e-mail", value="sajat.email@ceged.hu")
+subject = st.text_input("Tárgy", value="Teszt e-mail Streamlitből")
+body = st.text_area("Üzenet tartalma", value="Helló! Ez egy teszt e-mail Microsoft Graph API-val.")
+
+if st.button("Küldés"):
     email_msg = {
         "message": {
-            "subject": "Céges teszt üzenet",
-            "body": {"contentType": "Text", "content": "Helló! Ez egy teszt az MS Graph API-val."},
-            "toRecipients": [{"emailAddress": {"address": "cimzett@ceged.hu"}}],
+            "subject": subject,
+            "body": {"contentType": "Text", "content": body},
+            "toRecipients": [{"emailAddress": {"address": receiver_email}}],
         },
         "saveToSentItems": "true",
     }
 
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-    response = requests.post(endpoint, headers=headers, json=email_msg)
+    response = requests.post("https://graph.microsoft.com/v1.0/me/sendMail",
+                             headers=headers, json=email_msg)
 
     if response.status_code == 202:
-        st.success("Email elküldve!")
+        st.success(f"✅ E-mail elküldve a(z) {receiver_email} címre!")
     else:
-        st.error(f"Hiba: {response.text}")
-else:
-    st.error(f"Nem sikerült bejelentkezni: {result}")
-    if result is None:
-        st.error("Nem sikerült token-t szerezni (None jött vissza).")
-    elif "access_token" in result:
-        st.success("Sikeres bejelentkezés!")
-        token = result["access_token"]
-    else:
-        st.error(f"Hiba: {result}")
-
+        st.error(f"Hiba a küldésnél: {response.status_code} {response.text}")
 
 
 
@@ -163,6 +186,7 @@ else:
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
