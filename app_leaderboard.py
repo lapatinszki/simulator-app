@@ -47,8 +47,11 @@ if "access_token" in result:
     }
 
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-    response = requests.post("https://graph.microsoft.com/v1.0/users/sajat.ceges@email.com/sendMail",
-                             headers=headers, json=email_msg)
+    response = requests.post(
+                    "https://graph.microsoft.com/v1.0/users/toth.janos@ceged.hu/sendMail",
+                    headers=headers,
+                    json=email_msg
+                )
     if response.status_code == 202:
         st.success("Email elküldve!")
     else:
@@ -152,6 +155,7 @@ else:
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
