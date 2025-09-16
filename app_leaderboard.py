@@ -13,91 +13,48 @@ st.subheader("Leaderboard 🏆")
 
 
 import streamlit as st
-import msal
+from msal import ConfidentialClientApplication
 import requests
 
-st.title("Céges Outlook e-mail küldés – Streamlit")
-
-# ==========================
-# 1. Azure App adatok
-# ==========================
 client_id = st.secrets["azure"]["client_id"]
 tenant_id = st.secrets["azure"]["tenant_id"]
-authority = f"https://login.microsoftonline.com/{tenant_id}"  # v2.0 is jó: /v2.0
-scopes = ["Mail.Send"]  # engedély, hogy küldhessünk e-mailt
+client_secret = st.secrets["azure"]["client_secret"]
 
-
-from msal import ConfidentialClientApplication
+authority = f"https://login.microsoftonline.com/{tenant_id}"
+scopes = ["https://graph.microsoft.com/.default"]  # .default kell confidential client-hez
 
 app = ConfidentialClientApplication(
-    client_id=st.secrets["azure"]["client_id"],
-    client_credential=st.secrets["azure"]["client_secret"],
-    authority=f"https://login.microsoftonline.com/{st.secrets['azure']['tenant_id']}"
+    client_id=client_id,
+    client_credential=client_secret,
+    authority=authority
 )
 
-# ==========================
-# 2. MSAL PublicClientApplication
-# ==========================
-try:
-    app = msal.PublicClientApplication(client_id, authority=authority)
-except Exception as e:
-    st.error(f"Hiba MSAL init-nél: {e}")
-    st.stop()
+# Token megszerzése
+result = app.acquire_token_for_client(scopes=scopes)
 
-# ==========================
-# 3. Token lekérése (Device Flow)
-# ==========================
-flow = app.initiate_device_flow(scopes=scopes)
-if "user_code" not in flow:
-    st.error("Nem sikerült elindítani a Device Flow-t.")
-    st.stop()
-
-st.write("1️⃣ Nyisd meg a következő weboldalt a böngésződben:")
-st.code(flow['verification_uri'])
-st.write("2️⃣ Írd be a következő kódot:")
-st.code(flow['user_code'])
-st.write("⚠️ Miután beírtad, várj néhány másodpercet, amíg a token megszerezhető.")
-
-result = app.acquire_token_by_device_flow(flow)  # blokkolja a futást, amíg a felhasználó be nem lép
-
-# ==========================
-# 4. Token ellenőrzése
-# ==========================
-if result is None:
-    st.error("Token megszerzése sikertelen (None jött vissza).")
-    st.stop()
-elif "access_token" not in result:
-    st.error(f"Token hiba: {result}")
-    st.stop()
-else:
+if "access_token" in result:
     token = result["access_token"]
-    st.success("✅ Sikeres bejelentkezés! Access token megszerezve.")
+    st.success("Sikeres token! ✅")
 
-# ==========================
-# 5. Teszt e-mail küldése
-# ==========================
-receiver_email = st.text_input("Címzett e-mail", value="sajat.email@ceged.hu")
-subject = st.text_input("Tárgy", value="Teszt e-mail Streamlitből")
-body = st.text_area("Üzenet tartalma", value="Helló! Ez egy teszt e-mail Microsoft Graph API-val.")
-
-if st.button("Küldés"):
+    # Teszt e-mail küldése
     email_msg = {
         "message": {
-            "subject": subject,
-            "body": {"contentType": "Text", "content": body},
-            "toRecipients": [{"emailAddress": {"address": receiver_email}}],
+            "subject": "Teszt e-mail Streamlitből",
+            "body": {"contentType": "Text", "content": "Helló! Céges Graph API teszt."},
+            "toRecipients": [{"emailAddress": {"address": "sajat.ceges@email.com"}}],
         },
         "saveToSentItems": "true",
     }
 
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-    response = requests.post("https://graph.microsoft.com/v1.0/me/sendMail",
+    response = requests.post("https://graph.microsoft.com/v1.0/users/sajat.ceges@email.com/sendMail",
                              headers=headers, json=email_msg)
-
     if response.status_code == 202:
-        st.success(f"✅ E-mail elküldve a(z) {receiver_email} címre!")
+        st.success("Email elküldve!")
     else:
         st.error(f"Hiba a küldésnél: {response.status_code} {response.text}")
+else:
+    st.error(f"Token hiba: {result}")
 
 
 
@@ -195,6 +152,7 @@ if st.button("Küldés"):
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
