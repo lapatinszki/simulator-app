@@ -13,75 +13,49 @@ st.subheader("Leaderboard 🏆")
 
 
 import streamlit as st
-from msal import ConfidentialClientApplication
+from msal import PublicClientApplication
 import requests
 
-# Titkok beolvasása
 client_id = st.secrets["azure"]["client_id"]
 tenant_id = st.secrets["azure"]["tenant_id"]
-client_secret = st.secrets["azure"]["client_secret"]
-my_email = st.secrets["azure"]["my_email"]  # email innen jön, nem a kódból
-
 authority = f"https://login.microsoftonline.com/{tenant_id}"
-scopes = ["https://graph.microsoft.com/.default"]
 
-# MSAL Confidential Client
-app = ConfidentialClientApplication(
-    client_id=client_id,
-    client_credential=client_secret,
-    authority=authority
-)
+scopes = ["Mail.Send"]
 
-# Token megszerzése
-result = app.acquire_token_for_client(scopes=scopes)
-if "access_token" not in result:
+app = PublicClientApplication(client_id, authority=authority)
+
+# Device Flow
+flow = app.initiate_device_flow(scopes=scopes)
+st.write("Nyisd meg ezt az oldalt:", flow['verification_uri'])
+st.write("Írd be ezt a kódot:", flow['user_code'])
+
+result = app.acquire_token_by_device_flow(flow)
+
+if "access_token" in result:
+    token = result["access_token"]
+    st.success("Sikeres bejelentkezés!")
+
+    # Teszt e-mail küldés
+    subject = st.text_input("Tárgy", "Teszt Streamlit e-mail")
+    body = st.text_area("Üzenet", "Helló! Ez egy teszt e-mail.")
+    
+    if st.button("Küldés"):
+        email_msg = {
+            "message": {
+                "subject": subject,
+                "body": {"contentType": "Text", "content": body},
+                "toRecipients": [{"emailAddress": {"address": result['id_token_claims']['preferred_username']}}],
+            },
+            "saveToSentItems": "true",
+        }
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        response = requests.post("https://graph.microsoft.com/v1.0/me/sendMail", headers=headers, json=email_msg)
+        if response.status_code == 202:
+            st.success("Email elküldve!")
+        else:
+            st.error(f"Hiba: {response.status_code} {response.text}")
+else:
     st.error(f"Token hiba: {result}")
-    st.stop()
-
-token = result["access_token"]
-
-# E-mail küldés
-subject = st.text_input("Tárgy", value="Teszt e-mail Streamlitből")
-body = st.text_area("Üzenet tartalma", value="Helló! Ez egy teszt e-mail az M365 Graph API-val.")
-
-if st.button("Küldés"):
-    email_msg = {
-        "message": {
-            "subject": subject,
-            "body": {"contentType": "Text", "content": body},
-            "toRecipients": [{"emailAddress": {"address": my_email}}],
-        },
-        "saveToSentItems": "true",
-    }
-
-    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-    response = requests.post(
-        f"https://graph.microsoft.com/v1.0/users/{my_email}/sendMail",
-        headers=headers,
-        json=email_msg
-    )
-
-    if response.status_code == 202:
-        st.success("Email elküldve!")
-    else:
-        st.error(f"Hiba a küldésnél: {response.status_code} {response.text}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -158,6 +132,7 @@ if st.button("Küldés"):
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
