@@ -21,8 +21,8 @@ st.title("Céges Outlook e-mail küldés – Streamlit")
 # ==========================
 # 1. Azure App adatok
 # ==========================
-client_id = "IDE_JÖN_AZ_APP_CLIENT_ID"   # Azure App Registration Client ID
-tenant_id = "IDE_JÖN_A_TENANT_ID"       # Azure Directory (Tenant) ID
+client_id = st.secrets["azure"]["client_id"]
+tenant_id = st.secrets["azure"]["tenant_id"]
 authority = f"https://login.microsoftonline.com/{tenant_id}"  # v2.0 is jó: /v2.0
 scopes = ["Mail.Send"]  # engedély, hogy küldhessünk e-mailt
 
@@ -186,6 +186,7 @@ if st.button("Küldés"):
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
