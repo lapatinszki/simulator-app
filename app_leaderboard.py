@@ -20,7 +20,7 @@ client_id = "AZURE_CLIENT_ID"
 tenant_id = "AZURE_TENANT_ID"
 authority = f"https://login.microsoftonline.com/{tenant_id}/v2.0"
 scopes = ["Mail.Send"]
-
+st.write("Authority URL:", authority)
 # MSAL public client app
 app = msal.PublicClientApplication(client_id, authority=authority)
 
@@ -162,4 +162,5 @@ else:
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
