@@ -41,7 +41,7 @@ if "access_token" in result:
         "message": {
             "subject": "Teszt e-mail Streamlitből",
             "body": {"contentType": "Text", "content": "Helló! Céges Graph API teszt."},
-            "toRecipients": [{"emailAddress": {"address": "sajat.ceges@email.com"}}],
+            "toRecipients": [{"emailAddress": {"address": "lapatinszki18@gmail.com"}}],
         },
         "saveToSentItems": "true",
     }
@@ -152,6 +152,7 @@ else:
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
