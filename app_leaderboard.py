@@ -58,15 +58,16 @@ if "access_token" in result:
         st.error(f"Hiba: {response.text}")
 else:
     st.error(f"Nem sikerült bejelentkezni: {result}")
-
-
-if result is None:
+    if result is None:
     st.error("Nem sikerült token-t szerezni (None jött vissza).")
-elif "access_token" in result:
-    st.success("Sikeres bejelentkezés!")
-    token = result["access_token"]
-else:
-    st.error(f"Hiba: {result}")
+    elif "access_token" in result:
+        st.success("Sikeres bejelentkezés!")
+        token = result["access_token"]
+    else:
+        st.error(f"Hiba: {result}")
+
+
+
 
 
 
@@ -162,6 +163,7 @@ else:
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
