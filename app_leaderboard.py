@@ -48,7 +48,7 @@ if "access_token" in result:
 
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
     response = requests.post(
-                    "https://graph.microsoft.com/v1.0/users/toth.janos@ceged.hu/sendMail",
+                    "https://graph.microsoft.com/v1.0/users/lapatinszki18@gmail.com/sendMail",
                     headers=headers,
                     json=email_msg
                 )
@@ -155,6 +155,7 @@ else:
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
