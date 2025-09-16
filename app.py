@@ -93,7 +93,7 @@ elif not st.session_state.logged_in:
         """,
         unsafe_allow_html=True
     )
-    st.markdown("""<div style='line-height:0.5;'> </div>) #Üres sor
+    st.markdown("""<div style='line-height:0.5;'> </div>""") #Üres sor
 
     # JS script hozzáadása
     st.markdown("""
@@ -366,6 +366,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
