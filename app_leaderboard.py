@@ -3,8 +3,8 @@ import pandas as pd
 from streamlit_autorefresh import st_autorefresh
 
 # ---------- Automatikus frissítés ----------
- 10 másodpercenként újratölti az oldalt
-#st_autorefresh(interval=10 * 1000, key="leaderboard_refresh")
+#10 másodpercenként újratölti az oldalt
+st_autorefresh(interval=10 * 1000, key="leaderboard_refresh")
 
 # ---------- Streamlit UI ----------
 st.image("header.png", use_container_width=True)
@@ -66,6 +66,7 @@ for _, row in df.iterrows():
     </div>
     """, unsafe_allow_html=True) 
     
+
 
 
 
