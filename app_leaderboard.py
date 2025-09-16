@@ -16,8 +16,8 @@ import streamlit as st
 import msal
 import requests
 
-client_id = "914f306e-10d0-4c06-b916-0d360004388c"
-tenant_id = "AZURE_TENANT_ID"
+client_id = "AZURE_CLIENT_ID"
+tenant_id = "6d93b3cc-c87c-42be-8821-f9aa6ff35108"
 authority = f"https://login.microsoftonline.com/{tenant_id}"
 redirect_uri = "http://localhost:8501"
 scopes = ["Mail.Send"]
@@ -156,4 +156,5 @@ else:
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
