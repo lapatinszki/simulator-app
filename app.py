@@ -84,7 +84,7 @@ elif not st.session_state.logged_in:
     agree = st.checkbox("I agree to the Terms and Conditions")
     st.markdown(
         """
-        <div style='font-size:12px; line-height:1.4;'>
+        <div style='font-size:12px; line-height:1.0;'>
         I hereby consent to IDM Systems Zrt. using my personal data (email address, nickname) 
         in connection with the "Let's play a game" for the duration of the online game 
         10.01.2025 – 10.02.2025.  
@@ -366,6 +366,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
