@@ -16,13 +16,16 @@ import streamlit as st
 from msal import ConfidentialClientApplication
 import requests
 
+# Titkok beolvasása
 client_id = st.secrets["azure"]["client_id"]
 tenant_id = st.secrets["azure"]["tenant_id"]
 client_secret = st.secrets["azure"]["client_secret"]
+my_email = st.secrets["azure"]["my_email"]  # email innen jön, nem a kódból
 
 authority = f"https://login.microsoftonline.com/{tenant_id}"
-scopes = ["https://graph.microsoft.com/.default"]  # .default kell confidential client-hez
+scopes = ["https://graph.microsoft.com/.default"]
 
+# MSAL Confidential Client
 app = ConfidentialClientApplication(
     client_id=client_id,
     client_credential=client_secret,
@@ -31,37 +34,37 @@ app = ConfidentialClientApplication(
 
 # Token megszerzése
 result = app.acquire_token_for_client(scopes=scopes)
+if "access_token" not in result:
+    st.error(f"Token hiba: {result}")
+    st.stop()
 
-if "access_token" in result:
-    token = result["access_token"]
-    st.success("Sikeres token! ✅")
+token = result["access_token"]
 
-    # Teszt e-mail küldése
+# E-mail küldés
+subject = st.text_input("Tárgy", value="Teszt e-mail Streamlitből")
+body = st.text_area("Üzenet tartalma", value="Helló! Ez egy teszt e-mail az M365 Graph API-val.")
+
+if st.button("Küldés"):
     email_msg = {
         "message": {
-            "subject": "Teszt e-mail Streamlitből",
-            "body": {"contentType": "Text", "content": "Helló! Céges Graph API teszt."},
-            "toRecipients": [{"emailAddress": {"address": "lapatinszki18@gmail.com"}}],
+            "subject": subject,
+            "body": {"contentType": "Text", "content": body},
+            "toRecipients": [{"emailAddress": {"address": my_email}}],
         },
         "saveToSentItems": "true",
     }
 
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
     response = requests.post(
-    "https://graph.microsoft.com/v1.0/me/sendMail",
-    headers=headers,
-    json=email_msg
-)
+        f"https://graph.microsoft.com/v1.0/users/{my_email}/sendMail",
+        headers=headers,
+        json=email_msg
+    )
+
     if response.status_code == 202:
         st.success("Email elküldve!")
     else:
         st.error(f"Hiba a küldésnél: {response.status_code} {response.text}")
-else:
-    st.error(f"Token hiba: {result}")
-
-
-
-
 
 
 
@@ -155,6 +158,7 @@ else:
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
