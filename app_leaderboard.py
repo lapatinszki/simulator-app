@@ -26,6 +26,15 @@ tenant_id = st.secrets["azure"]["tenant_id"]
 authority = f"https://login.microsoftonline.com/{tenant_id}"  # v2.0 is jó: /v2.0
 scopes = ["Mail.Send"]  # engedély, hogy küldhessünk e-mailt
 
+
+from msal import ConfidentialClientApplication
+
+app = ConfidentialClientApplication(
+    client_id=st.secrets["azure"]["client_id"],
+    client_credential=st.secrets["azure"]["client_secret"],
+    authority=f"https://login.microsoftonline.com/{st.secrets['azure']['tenant_id']}"
+)
+
 # ==========================
 # 2. MSAL PublicClientApplication
 # ==========================
@@ -186,6 +195,7 @@ if st.button("Küldés"):
 #     </div>
 #     """, unsafe_allow_html=True) 
     
+
 
 
 
