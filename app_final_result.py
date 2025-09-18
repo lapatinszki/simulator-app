@@ -25,17 +25,13 @@ def calculate_results(github_token, nickname, email):
 
         rank_str = ordinal(rank)
 
-    st.markdown(
+    gap_height = 50  # itt állítod a magasságot
+
+    html_gap = f"""
+    <div style="height:{gap_height}px;"></div>
     """
-    <style>
-    .main {
-        max-height: 200px;
-        overflow: hidden;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+
+    components.html(html_gap, height=gap_height)
 
 
     html_content_1 = f"""
