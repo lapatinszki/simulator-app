@@ -356,6 +356,7 @@ else:
                     st.warning("⚠️ Are you sure you want to finish the game? You won’t be able to go back after this!")
 
                     if st.button("✅ Yes, I’m ready for my results!", key=f"confirm_yes_{i}"):
+                        scroll_Delay()
                         st.session_state.show_summary = True
                         st.session_state.confirm_finish = False
                         st.rerun()
