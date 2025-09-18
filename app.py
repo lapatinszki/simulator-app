@@ -55,9 +55,9 @@ except: github_token = None
 
 # ------------------ GÖRGETÉS: KEZELÉS ------------------
 if st.session_state.scroll_to_top:
-    scroll_to_here(0, key="top")  # Scroll to the top of the page
+    scroll_to_here(0.25, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
-    st.rerun(0.25) 
+    st.rerun() 
 
 elif st.session_state.scroll_to_top_Delay:
     scroll_to_here(0, key="top")  # Scroll to the top of the page
@@ -91,7 +91,7 @@ elif not st.session_state.logged_in:
         """,
         unsafe_allow_html=True
     )
-    st.markdown("") #Üres sor
+    #st.markdown("") #Üres sor
 
     # JS script hozzáadása
     st.markdown("""
