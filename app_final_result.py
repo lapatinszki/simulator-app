@@ -158,7 +158,7 @@ def calculate_results(github_token, nickname, email):
     </div>
     """
 
-    components.html(html_content_2, height=180)
+    components.html(html_content_2, height=800)
 
 
 
