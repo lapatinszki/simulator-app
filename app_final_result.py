@@ -25,9 +25,20 @@ def calculate_results(github_token, nickname, email):
 
         rank_str = ordinal(rank)
 
+    st.markdown(
+    """
+    <style>
+    .main {
+        max-height: 200px;
+        overflow: hidden;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-    time.sleep(1)
-    html_content = f"""
+
+    html_content_1 = f"""
     <style>
     .container {{
         position: relative;
@@ -61,8 +72,6 @@ def calculate_results(github_token, nickname, email):
     .slide-up.delay-2 {{ animation-delay: 1.5s; }}
     .slide-up.delay-3 {{ animation-delay: 2.0s; }}
     .slide-up.delay-4 {{ animation-delay: 2.5s; }}
-    .slide-up.delay-5 {{ animation-delay: 4.0s; }}
-    .slide-up.delay-6 {{ animation-delay: 5.0s; }}
 
     .big-number {{ line-height: 0.9; }}
     </style>
@@ -81,22 +90,62 @@ def calculate_results(github_token, nickname, email):
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {{
-        setTimeout(() => {{
-            confetti({{
-                particleCount: 150,
-                spread: 100,
-                origin: {{ y: 0.5 }}
-            }});
-        }}, 1900);
-    }});
-    </script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {{
+            setTimeout(() => {{
+                confetti({{
+                    particleCount: 150,
+                    spread: 100,
+                    origin: {{ y: 0.5 }}
+                }});
+            }}, 1900);
+        }});
+        </script>
 
         <div class="slide-up delay-4" style='font-size:14px; margin-top:0px;'>
             Congratulations! 🎉 You completed the game successfully.
         </div>
+    </div>
+    """
+    components.html(html_content_1, height=200)
 
+
+    time.sleep(4)
+    html_content_2 = """
+    <style>
+    .container {
+        position: relative;
+        overflow: visible;
+        height: auto;
+        margin-bottom: 5px;
+        text-align: center;
+        color: white;
+        padding: 8px 12px;
+    }
+
+    @keyframes slideUp {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-up {
+        opacity: 0;
+        display: block;
+        width: 100%;
+        animation-name: slideUp;
+        animation-duration: 0.8s;
+        animation-timing-function: ease-out;
+        animation-fill-mode: both;
+        white-space: normal;
+        word-wrap: break-word;
+        margin: 8px 0;
+    }
+
+    .slide-up.delay-5 { animation-delay: 0.5s; }
+    .slide-up.delay-6 { animation-delay: 1.5s; }
+    </style>
+
+    <div class="container">
         <div class="slide-up delay-5" style='font-size:18px; font-weight:bold; color:#F15922; margin-top:50px;'>
             What’s the ROI of turning 27 variables into one clear decision?
         </div>
@@ -108,11 +157,9 @@ def calculate_results(github_token, nickname, email):
             The result: tangible improvements with relatively small investment, where the cost of just a single day of operations can pay back within only a few months.
         </div>
     </div>
-
-    
     """
 
-    components.html(html_content, height=700)
+    components.html(html_content_2, height=180)
 
 
 
