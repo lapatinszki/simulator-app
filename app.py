@@ -7,7 +7,7 @@ import time
 
 from concurrent.futures import ThreadPoolExecutor
 from streamlit_scroll_to_top import scroll_to_here
-import app_modify_tables, app_modify_GitTable, app_display_results, app_display_parameters, app_email, app_final_result, app_game_description, app_leaderboard
+import app_modify_tables, app_modify_GitTable, app_display_results, app_display_parameters, app_email, app_final_result, app_game_description
 
 
 
@@ -57,13 +57,12 @@ except: github_token = None
 if st.session_state.scroll_to_top:
     scroll_to_here(0, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
-    time.sleep(0.2)
     st.rerun() 
 
 elif st.session_state.scroll_to_top_Delay:
     scroll_to_here(0, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top_Delay = False  # Reset the state after scrolling
-    time.sleep(0.7)
+    time.sleep(0.2)
     st.rerun() 
 
 
@@ -84,11 +83,10 @@ elif not st.session_state.logged_in:
     agree = st.checkbox("I agree to the Terms and Conditions")
     st.markdown(
         """
-        <div style='font-size:12px; line-height:1.4;'>
-        I hereby consent to IDM Systems Zrt. using my personal data (email address, nickname) 
-        in connection with the "Let's play a game" for the duration of the online game 
-        10.01.2025 – 10.02.2025.  
-        I understand that I may withdraw my consent at any time by contacting [*] via email.
+        <div style='font-size:12px; line-height:1.4; text-align: justify; text-justify: inter-word;'>
+        I hereby consent to the processing of my personal data (nickname, email address) by IDM-Systems Zrt., (hereinafter: Data Controller) for the purpose of receiving newsletters with information about the company’s products, services, promotions, and events. <br><br>
+
+        I confirm that I have read and understood <a href="https://www.idm-systems.hu" target="_blank">IDM-Systems Zrt’s Privacy Notice</a> - for website visitors - and acknowledge that I may withdraw my consent at any time, without giving any reason, by clicking the "Unsubscribe" in the newsletter or by sending an email to privacy@idm-systems.hu.  
         </div>
         """,
         unsafe_allow_html=True
@@ -358,19 +356,13 @@ else:
                     st.warning("⚠️ Are you sure you want to finish the game? You won’t be able to go back after this!")
 
                     if st.button("✅ Yes, I’m ready for my results!", key=f"confirm_yes_{i}"):
-                        scroll_Delay()
                         st.session_state.show_summary = True
                         st.session_state.confirm_finish = False
                         st.rerun()
-                    if st.button("❌ No, I'll keep palying!", key=f"confirm_no_{i}"):
+                    if st.button("❌ No, I'll keep playing!", key=f"confirm_no_{i}"):
                         st.session_state.confirm_finish = False
                         st.rerun()
             
-
-
-
-
-
 
 
 
