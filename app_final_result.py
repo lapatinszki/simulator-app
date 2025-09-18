@@ -25,7 +25,7 @@ def calculate_results(github_token, nickname, email):
 
         rank_str = ordinal(rank)
 
-    gap_height = 100  # itt állítod a magasságot
+    gap_height = 80  # itt állítod a magasságot
 
     html_gap = f"""
     <div style="height:{gap_height}px;"></div>
