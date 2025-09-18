@@ -110,7 +110,6 @@ def calculate_results(github_token, nickname, email):
     components.html(html_content_1, height=200)
 
 
-    time.sleep(4)
     html_content_2 = """
     <style>
     .container {
@@ -141,8 +140,8 @@ def calculate_results(github_token, nickname, email):
         margin: 8px 0;
     }
 
-    .slide-up.delay-5 { animation-delay: 0.5s; }
-    .slide-up.delay-6 { animation-delay: 1.5s; }
+    .slide-up.delay-5 { animation-delay: 4.5s; }
+    .slide-up.delay-6 { animation-delay: 5.5s; }
     </style>
 
     <div class="container">
