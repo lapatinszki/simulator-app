@@ -57,12 +57,12 @@ except: github_token = None
 if st.session_state.scroll_to_top:
     scroll_to_here(0, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top = False  # Reset the state after scrolling
-    st.rerun() 
+    st.rerun(0.25) 
 
 elif st.session_state.scroll_to_top_Delay:
     scroll_to_here(0, key="top")  # Scroll to the top of the page
     st.session_state.scroll_to_top_Delay = False  # Reset the state after scrolling
-    time.sleep(0.2)
+    time.sleep(0.8)
     st.rerun() 
 
 
@@ -141,7 +141,7 @@ elif not st.session_state.logged_in:
                     app_email.send_email(email, st.session_state.email_hash, nickname)
 
                 st.session_state.show_game_intro = True
-                scroll()
+                scroll_Delay()
                 st.rerun()
         else:
             if email == "":
