@@ -76,7 +76,7 @@ def play_the_GIF():
     overlay_placeholder.markdown(overlay_html, unsafe_allow_html=True)
 
     # Hosszú folyamat szimulálása
-    time.sleep(5)  # ide jön a tényleges betöltés / számítás
+    #time.sleep(5)  # ide jön a tényleges betöltés / számítás
 
     # Eltüntetés a .empty() metódussal
     overlay_placeholder.empty()
@@ -174,3 +174,4 @@ def display_charts(selected_row, df):
         # Robotok
         robot_prefixes = ["Robot 01 -", "Robot 02 -"]
         create_bar_chart(selected_row, robot_prefixes, "Robot(s)")
+
