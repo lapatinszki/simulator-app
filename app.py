@@ -279,7 +279,7 @@ else:
 
                 # --- 3. GIF lejátszása ---
                 start_time = time.time()
-                app_display_results.play_the_GIF()  # elindítja a gifet
+                overlay_placeholder = app_display_results.play_the_GIF()  # elindítja a gifet
 
                 # minimum 5 másodperc + a háttérszál végéig
                 gif_min_duration = 0
@@ -290,6 +290,7 @@ else:
                     time.sleep(0.1)  # rövid szünet, hogy ne pörögjön a CPU fölöslegesen
 
                 # --- 4. Várjuk meg a háttér futás végét ---
+                overlay_placeholder.empty() #Leveszi a GIF-et
                 result = future.result()
 
 
@@ -367,6 +368,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
