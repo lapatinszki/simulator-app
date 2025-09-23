@@ -25,13 +25,11 @@ def calculate_results(github_token, nickname, email):
 
         rank_str = ordinal(rank)
 
-    gap_height = 70  # itt állítod a magasságot
-
-    html_gap = f"""
-    <div style="height:{gap_height}px;"></div>
-    """
-
-    components.html(html_gap, height=gap_height)
+    # gap_height = 70  # itt állítod a magasságot
+    # html_gap = f"""
+    # <div style="height:{gap_height}px;"></div>
+    # """
+    # components.html(html_gap, height=gap_height)
 
 
     html_content_1 = f"""
@@ -73,7 +71,7 @@ def calculate_results(github_token, nickname, email):
     </style>
 
     <div class="container">
-        <div class="slide-up delay-1" style='font-size:18px; margin-bottom:5px;'>
+        <div class="slide-up delay-1" style='font-size:18px; margin-bottom:5px; margin-top:100px;'>
             Your highest profit: <span style="color:#F15922; font-weight:bold;">{max_profit:.2f} €</span>
         </div>
 
@@ -104,7 +102,7 @@ def calculate_results(github_token, nickname, email):
         </div>
     </div>
     """
-    components.html(html_content_1, height=220)
+    components.html(html_content_1, height=325)
 
 
     html_content_2 = """
