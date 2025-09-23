@@ -282,7 +282,7 @@ else:
                 overlay_placeholder = app_display_results.play_the_GIF()  # elindítja a gifet
 
                 # minimum 5 másodperc + a háttérszál végéig
-                gif_min_duration = 0
+                gif_min_duration = 5
                 while True:
                     elapsed = time.time() - start_time
                     if elapsed >= gif_min_duration and future.done():
@@ -368,6 +368,7 @@ else:
                         st.session_state.confirm_finish = False
                         st.rerun()
             
+
 
 
 
