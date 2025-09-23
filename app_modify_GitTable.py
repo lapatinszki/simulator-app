@@ -24,7 +24,7 @@ def load_csv_from_github(repo_name, file_path):
         return pd.DataFrame(), None
 
 
-def save_csv_to_github(df, repo_name, file_path, sha=None, commit_message="Update CSV"):
+def save_csv_to_github(df, repo_name, file_path, sha=None, commit_message="Update CSV", retry_update_func=None, retry_args=None):
     #Mentés GitHub repo-ba commit-tal.
     token = st.secrets["GITHUB_TOKEN"]
     g = Github(token)
@@ -41,24 +41,24 @@ def save_csv_to_github(df, repo_name, file_path, sha=None, commit_message="Updat
                 repo.create_file(file_path, commit_message, csv_content)
             break
 
-
         except GithubException as e:
             if e.status == 409:
                 time.sleep(2)
 
-                # Új fájl és SHA lekérése
+                # Újraolvasás GitHub-ból
                 contents = repo.get_contents(file_path)
                 csv_str = contents.decoded_content.decode("utf-8")
                 df = pd.read_csv(io.StringIO(csv_str))
                 df.columns = df.columns.str.strip()
-
-                # Az új df-hez hozzá kell fűzni a régi df különbségeit
-                # (például merge, append, concat – attól függ, mit tároltok benne)
-                #df = pd.concat([latest_df, df]).drop_duplicates().reset_index(drop=True)
                 sha = contents.sha
+
+                # Újraalkalmazzuk a user változtatását
+                if retry_update_func:
+                    df = retry_update_func(df, *retry_args)
+
                 continue
             else:
-                raise ## Más hiba van, Nem próbálkozik tovább!
+                raise
             
 
 
@@ -149,7 +149,5 @@ def get_rank_for_profit(profit, repo_name, leaderboard_file="table_Leaderboard.c
     lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
     rank = (lb_df["Profit"] > profit).sum() + 1
     return rank
-
-
 
 
