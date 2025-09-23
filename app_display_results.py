@@ -79,7 +79,7 @@ def play_the_GIF():
     #time.sleep(5)  # ide jön a tényleges betöltés / számítás
 
     # Eltüntetés a .empty() metódussal
-    overlay_placeholder.empty()
+    return overlay_placeholder #overlay_placeholder.empty()
 
 
 
@@ -174,4 +174,5 @@ def display_charts(selected_row, df):
         # Robotok
         robot_prefixes = ["Robot 01 -", "Robot 02 -"]
         create_bar_chart(selected_row, robot_prefixes, "Robot(s)")
+
 
