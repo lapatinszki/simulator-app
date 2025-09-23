@@ -54,7 +54,7 @@ def save_csv_to_github(df, repo_name, file_path, sha=None, commit_message="Updat
 
                 # Az új df-hez hozzá kell fűzni a régi df különbségeit
                 # (például merge, append, concat – attól függ, mit tároltok benne)
-                df = pd.concat([latest_df, df]).drop_duplicates().reset_index(drop=True)
+                #df = pd.concat([latest_df, df]).drop_duplicates().reset_index(drop=True)
                 sha = contents.sha
                 continue
             else:
@@ -149,5 +149,6 @@ def get_rank_for_profit(profit, repo_name, leaderboard_file="table_Leaderboard.c
     lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
     rank = (lb_df["Profit"] > profit).sum() + 1
     return rank
+
 
 
