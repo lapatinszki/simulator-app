@@ -279,16 +279,18 @@ else:
 
                 # --- 3. GIF lejátszása ---
                 start_time = time.time()
-                app_display_results.play_the_GIF()
+                app_display_results.play_the_GIF()  # elindítja a gifet
 
-                # minimum várakozás
-                gif_duration = 5
-                elapsed = time.time() - start_time
-                if elapsed < gif_duration:
-                    time.sleep(gif_duration - elapsed)
+                # minimum 5 másodperc + a háttérszál végéig
+                gif_min_duration = 5
+                while True:
+                    elapsed = time.time() - start_time
+                    if elapsed >= gif_min_duration and future.done():
+                        break
+                    time.sleep(0.1)  # rövid szünet, hogy ne pörögjön a CPU fölöslegesen
 
                 # --- 4. Várjuk meg a háttér futás végét ---
-                future.result()
+                result = future.result()
 
 
                 # --- Attempt mentése Profit-tal együtt ---
