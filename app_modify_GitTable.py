@@ -1,6 +1,8 @@
 import pandas as pd
 import io
+import time
 from github import Github
+from github import GithubException
 import streamlit as st
 
 # -------------------------------------------------------------------------------------------
@@ -27,13 +29,37 @@ def save_csv_to_github(df, repo_name, file_path, sha=None, commit_message="Updat
     token = st.secrets["GITHUB_TOKEN"]
     g = Github(token)
     repo = g.get_repo(repo_name)
-    csv_buffer = io.StringIO()
-    df.to_csv(csv_buffer, index=False)
-    csv_content = csv_buffer.getvalue()
-    if sha:
-        repo.update_file(file_path, commit_message, csv_content, sha)
-    else:
-        repo.create_file(file_path, commit_message, csv_content)
+
+    while True:
+        try:
+            csv_buffer = io.StringIO()
+            df.to_csv(csv_buffer, index=False)
+            csv_content = csv_buffer.getvalue()
+            if sha:
+                repo.update_file(file_path, commit_message, csv_content, sha)
+            else:
+                repo.create_file(file_path, commit_message, csv_content)
+            break
+
+
+        except GithubException as e:
+            if e.status == 409:
+                time.sleep(2)
+
+                # Új fájl és SHA lekérése
+                contents = repo.get_contents(file_path)
+                csv_str = contents.decoded_content.decode("utf-8")
+                latest_df = pd.read_csv(io.StringIO(csv_str))
+                latest_df.columns = latest_df.columns.str.strip()
+
+                # Az új df-hez hozzá kell fűzni a régi df különbségeit
+                # (például merge, append, concat – attól függ, mit tároltok benne)
+                df = pd.concat([latest_df, df]).drop_duplicates().reset_index(drop=True)
+                sha = contents.sha
+                continue
+            else:
+                raise ## Más hiba van, Nem próbálkozik tovább!
+            
 
 
 
@@ -123,6 +149,5 @@ def get_rank_for_profit(profit, repo_name, leaderboard_file="table_Leaderboard.c
     lb_df = lb_df.sort_values(by="Profit", ascending=False).reset_index(drop=True)
     rank = (lb_df["Profit"] > profit).sum() + 1
     return rank
-
 
 
