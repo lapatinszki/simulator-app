@@ -135,12 +135,12 @@ def calculate_results(github_token, nickname, email):
         margin: 8px 0;
     }
 
-    .slide-up.delay-5 { animation-delay: 5.5s; }
-    .slide-up.delay-6 { animation-delay: 6.5s; }
+    .slide-up.delay-5 { animation-delay: 4.5s; }
+    .slide-up.delay-6 { animation-delay: 5.5s; }
     </style>
 
     <div class="container">
-        <div class="slide-up delay-5" style='font-size:18px; font-weight:bold; color:#F15922; margin-top:50px;'>
+        <div class="slide-up delay-5" style='font-size:18px; font-weight:bold; color:#F15922; margin-top:40px;'>
             What’s the ROI of turning 27 variables into one clear decision?
         </div>
 
