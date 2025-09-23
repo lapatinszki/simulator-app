@@ -25,7 +25,7 @@ def calculate_results(github_token, nickname, email):
 
         rank_str = ordinal(rank)
 
-    gap_height = 100  # itt állítod a magasságot
+    gap_height = 150  # itt állítod a magasságot
 
     html_gap = f"""
     <div style="height:{gap_height}px;"></div>
@@ -90,9 +90,10 @@ def calculate_results(github_token, nickname, email):
         document.addEventListener('DOMContentLoaded', function() {{
             setTimeout(() => {{
                 confetti({{
-                    particleCount: 150,
+                    particleCount: 300,
                     spread: 100,
-                    origin: {{ y: 0.5 }}
+                     startVelocity: 30,
+                    origin: {{ y: 0.70 }}
                 }});
             }}, 1900);
         }});
