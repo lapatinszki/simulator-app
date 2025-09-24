@@ -28,7 +28,7 @@ def send_email(email, email_hash, nickname, agree_w_news):
         <b>Nickname:</b> {nickname}<br>
         <b>Email:</b> {email}<br>
         <b>News:</b> {agree_w_news}<br>
-        <b>Email hash kód:</b> {email_hash}     
+        <b>Hash ID:</b> {email_hash}     
     </body>
     </html>
     """
