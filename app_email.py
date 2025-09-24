@@ -6,8 +6,8 @@ import re, os
 import dns.resolver
 from email.utils import formataddr
 
-# Küldés saját Gmailre - bejelentkezés logolása:
-def send_email(email, email_hash, nickname):
+# Küldés saját Emailre - bejelentkezés logolása:
+def send_email(email, email_hash, nickname, agree_w_news):
     
     # Secrets betöltése
     smtp_server = st.secrets["email"]["smtp_server"]
@@ -18,18 +18,20 @@ def send_email(email, email_hash, nickname):
 
     # Email adatok
     sender_name = "IDM Systems Zrt."
-    sender_email = st.secrets["email"]["sender_email"] #"idm@idm-systems.hu"
-    receiver_email = st.secrets["email"]["reciever_email"] #"lapatinszki18@gmail.com"
-    subject = f"Új belépés: {nickname}"
+    sender_email = st.secrets["email"]["sender_email"]
+    receiver_email = st.secrets["email"]["reciever_email"]
+
+    subject = f"Login: {nickname}  - news: {agree_w_news}"
     body = f"""
     <html>
     <body>
+        <b>Nickname:</b> {nickname}<br>
         <b>Email:</b> {email}<br>
-        <b>Email hash kód:</b> {email_hash}<br>
-        <b>Nickname:</b> {nickname}
+        <b>News:</b> {agree_w_news}<br>
+        <b>Email hash kód:</b> {email_hash}     
     </body>
-     </html>
-     """
+    </html>
+    """
 
     message = MIMEMultipart()
     message["From"] = formataddr((sender_name, sender_email))
