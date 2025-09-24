@@ -18,8 +18,8 @@ def send_email(email, email_hash, nickname):
 
     # Email adatok
     sender_name = "IDM Systems Zrt."
-    sender_email = "idm@idm-systems.hu"
-    receiver_email = "lapatinszki18@gmail.com"
+    sender_email = st.secrets["email"]["sender_email "] #"idm@idm-systems.hu"
+    receiver_email = st.secrets["email"]["reciever_email "] #"lapatinszki18@gmail.com"
     subject = f"Új belépés: {nickname}"
     body = f"""
     <html>
@@ -60,7 +60,7 @@ def send_results(receiver_email, nickname, profit):
 
     # Email adatok
     sender_name = "IDM Systems Zrt."
-    sender_email = "idm@idm-systems.hu"
+    sender_email = st.secrets["email"]["sender_email "]
     receiver_email = receiver_email
     subject = "🏆 Factory Manager Challenge – Your results are in!"
     body = f"""
@@ -104,14 +104,6 @@ def send_results(receiver_email, nickname, profit):
             server.sendmail(sender_email, receiver_email, message.as_string())
     except Exception as e:
         st.error(f"Hiba történt: {e}")
-
-
-
-     
-
-
-
-
 
 
 
